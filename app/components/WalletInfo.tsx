@@ -5,6 +5,7 @@ import * as Clipboard from "expo-clipboard";
 import { useTestSol, useWalletData } from "@/app/hooks/useWallet";
 import TokenItem from "@/app/components/ui/TokenItem";
 import Button from "@/app/components/ui/Button";
+import { router } from "expo-router";
 
 type WalletInfoProps = {
   onLogout: () => void;
@@ -17,6 +18,14 @@ export default function WalletInfo({ onLogout }: WalletInfoProps) {
   const handleCopyAddress = async () => {
     if (wallet?.address) {
       await Clipboard.setStringAsync(wallet.address);
+    }
+  };
+
+  const handleOpenBrowser = () => {
+    try {
+      router.push("/browser");
+    } catch (e) {
+      console.error("Navigation error:", e);
     }
   };
 
@@ -61,6 +70,12 @@ export default function WalletInfo({ onLogout }: WalletInfoProps) {
           title="+ Get test USDC (coming soon)"
           variant="secondary"
           disabled
+        />
+        <View style={styles.spacer} />
+        <Button
+          title="Browse"
+          variant="secondary"
+          onPress={handleOpenBrowser}
         />
         <View style={styles.spacer} />
         <Button title="Log out" variant="secondary" onPress={onLogout} />

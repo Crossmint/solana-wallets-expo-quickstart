@@ -1,0 +1,79 @@
+import type {
+  Wallet,
+  TransferParams,
+  DelegatedSignerParams,
+} from "../types/wallet";
+import type { Token, TokenSymbol } from "../types/wallet";
+
+// Mock data for wallet info
+const mockTokens: Token[] = [
+  {
+    symbol: "SOL",
+    name: "Solana",
+    balance: "0.00 SOL",
+    logo: "◎",
+  },
+  {
+    symbol: "USDC",
+    name: "USDC",
+    balance: "$ 2.00",
+    logo: "$",
+  },
+];
+
+export const walletService = {
+  /**
+   * Get wallet information
+   */
+  getWallet: async (): Promise<Wallet> => {
+    // Simulate API delay
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Return mock wallet data
+    return {
+      address: "DL82...paiM",
+      tokens: mockTokens,
+    };
+  },
+
+  /**
+   * Transfer tokens
+   */
+  transferTokens: async (params: TransferParams): Promise<boolean> => {
+    // Simulate API delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    console.log("Transfer initiated:", params);
+
+    // Simulate success
+    return true;
+  },
+
+  /**
+   * Add delegated signer
+   */
+  addDelegatedSigner: async (
+    params: DelegatedSignerParams
+  ): Promise<boolean> => {
+    // Simulate API delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    console.log("Add delegated signer:", params);
+
+    // Simulate success
+    return true;
+  },
+
+  /**
+   * Get test SOL (airdrop)
+   */
+  getTestSol: async (): Promise<boolean> => {
+    // Simulate API delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    console.log("Getting test SOL");
+
+    // Simulate success
+    return true;
+  },
+};

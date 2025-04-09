@@ -1,15 +1,37 @@
+import { Image, StyleSheet, Text, View } from "react-native";
+import { router } from "expo-router";
+import AppLayout from "@/app/components/layout/AppLayout";
 import Button from "@/app/components/ui/Button";
-import { View, StyleSheet, Text } from "react-native";
 
-export default function Home() {
+export default function LoginScreen() {
+  const handleLogin = () => {
+    console.log("Simulating login...");
+    try {
+      router.push("/wallet");
+    } catch (e) {
+      console.error("Navigation error:", e);
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>Crossmint Expo Demo</Text>
+    <AppLayout>
+      <View style={styles.container}>
+        <View style={styles.content}>
+          <Image
+            source={{
+              uri: "https://www.crossmint.com/assets/crossmint/logo/v2",
+            }}
+            style={styles.logo}
+          />
+          <Text style={styles.title}>Solana Wallets Quickstart</Text>
+          <Text style={styles.subtitle}>The easiest way to build onchain</Text>
 
-        <Button title="Login" />
+          <View style={styles.buttonContainer}>
+            <Button title="Login" onPress={handleLogin} />
+          </View>
+        </View>
       </View>
-    </View>
+    </AppLayout>
   );
 }
 
@@ -20,7 +42,14 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
-    marginTop: "30%",
+    marginTop: "20%",
+    alignItems: "center",
+  },
+  logo: {
+    width: 150,
+    height: 40,
+    resizeMode: "contain",
+    marginBottom: 24,
   },
   title: {
     fontSize: 28,
@@ -34,16 +63,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 40,
   },
-  buttons: {
-    marginTop: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 12,
-    color: "#333",
-  },
-  spacer: {
-    height: 12,
+  buttonContainer: {
+    width: "100%",
+    marginTop: 24,
   },
 });

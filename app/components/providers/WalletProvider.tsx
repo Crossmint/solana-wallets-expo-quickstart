@@ -1,4 +1,4 @@
-import { walletApiKey, appId } from "@/src/utils/config";
+import { walletApiKey, appId } from "@/app/utils/config";
 import type { ReactNode } from "react";
 import {
   CrossmintProvider,

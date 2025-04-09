@@ -1,9 +1,11 @@
+import { createTokenTransferTransaction } from "@/app/utils";
 import type {
   Wallet,
   TransferParams,
   DelegatedSignerParams,
 } from "../types/wallet";
 import type { Token, TokenSymbol } from "../types/wallet";
+import { usdcDevnetTokenMint } from "@/app/utils/config";
 
 // Mock data for wallet info
 const mockTokens: Token[] = [
@@ -40,10 +42,19 @@ export const walletService = {
    * Transfer tokens
    */
   transferTokens: async (params: TransferParams): Promise<boolean> => {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
     console.log("Transfer initiated:", params);
+
+    const { token, amount, recipientAddress } = params;
+
+    const transaction = await createTokenTransferTransaction(
+      "EbXL4e6XgbcC7s33cD5EZtyn5nixRDsieBjPQB7zf448",
+      recipientAddress,
+      usdcDevnetTokenMint,
+      Number(amount)
+    );
+
+    console.log("Transaction created");
+    console.log({ transaction });
 
     // Simulate success
     return true;

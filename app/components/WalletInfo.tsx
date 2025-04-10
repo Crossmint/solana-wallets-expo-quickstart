@@ -19,18 +19,22 @@ const formatBalance = (balance: string, decimals: number) => {
   return (Number(balance) / 10 ** decimals).toFixed(2);
 };
 
+const formatWalletAddress = (address: string) => {
+  return `${address.slice(0, 4)}...${address.slice(-4)}`;
+};
+
 const initialTokens: Token[] = [
   {
     symbol: "SOL",
     name: "Solana",
     balance: "0",
-    logo: "https://cryptologos.cc/logos/solana-sol-logo.svg?v=040",
+    logo: require("@/assets/images/solana-sol-logo.png"),
   },
   {
     symbol: "USDC",
     name: "USDC",
     balance: "0",
-    logo: "https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040",
+    logo: require("@/assets/images/usd-coin-usdc-logo.png"),
   },
 ];
 
@@ -124,7 +128,9 @@ export default function WalletInfo({ onLogout }: WalletInfoProps) {
       <View style={styles.walletHeader}>
         <Text style={styles.walletTitle}>Your wallet</Text>
         <View style={styles.addressContainer}>
-          <Text style={styles.walletAddress}>{wallet.getAddress()}</Text>
+          <Text style={styles.walletAddress}>
+            {formatWalletAddress(wallet.getAddress())}
+          </Text>
           <TouchableOpacity
             style={styles.copyButton}
             onPress={handleCopyAddress}

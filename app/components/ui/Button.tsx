@@ -1,15 +1,22 @@
 import { forwardRef } from "react";
-import { TouchableOpacity, Text, StyleSheet, type View } from "react-native";
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  type View,
+  ActivityIndicator,
+} from "react-native";
 
 interface ButtonProps {
   onPress?: () => void;
   title: string;
   variant?: "primary" | "secondary";
   disabled?: boolean;
+  loading?: boolean;
 }
 
 const Button = forwardRef<View, ButtonProps>(
-  ({ onPress, title, variant = "primary", disabled }, ref) => {
+  ({ onPress, title, variant = "primary", disabled, loading }, ref) => {
     return (
       <TouchableOpacity
         ref={ref}
@@ -19,17 +26,24 @@ const Button = forwardRef<View, ButtonProps>(
           disabled && styles.buttonDisabled,
         ]}
         onPress={onPress}
-        disabled={disabled}
+        disabled={disabled || loading}
       >
-        <Text
-          style={[
-            styles.text,
-            variant === "secondary" && styles.textSecondary,
-            disabled && styles.textDisabled,
-          ]}
-        >
-          {title}
-        </Text>
+        {loading ? (
+          <ActivityIndicator
+            color={variant === "secondary" ? "#00C853" : "white"}
+            size="small"
+          />
+        ) : (
+          <Text
+            style={[
+              styles.text,
+              variant === "secondary" && styles.textSecondary,
+              disabled && styles.textDisabled,
+            ]}
+          >
+            {title}
+          </Text>
+        )}
       </TouchableOpacity>
     );
   }

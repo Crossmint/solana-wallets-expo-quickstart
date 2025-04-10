@@ -2,7 +2,7 @@ import Button from "@/app/components/ui/Button";
 import useWallet from "@/app/hooks/useWallet";
 import type { TokenSymbol } from "@/app/types/wallet";
 import { createTokenTransferTransaction } from "@/app/utils";
-import { usdcDevnetTokenMint } from "@/app/utils/config";
+import { jwt, usdcDevnetTokenMint } from "@/app/utils/config";
 import React, { useCallback, useState } from "react";
 import {
   View,
@@ -14,7 +14,7 @@ import {
 
 export default function TransferForm() {
   // TODO: Replace when we have auth
-  const { wallet } = useWallet("solana-smart-wallet", {});
+  const { wallet } = useWallet("solana-smart-wallet", {}, jwt);
   const [amount, setAmount] = useState("");
   const [recipientAddress, setRecipientAddress] = useState("");
   const [selectedToken, setSelectedToken] = useState<TokenSymbol>("SOL");

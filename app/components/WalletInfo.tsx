@@ -13,6 +13,7 @@ import Button from "@/app/components/ui/Button";
 import { router } from "expo-router";
 import useWallet from "@/app/hooks/useWallet";
 import type { Token } from "@/app/types/wallet";
+import { jwt } from "@/app/utils/config";
 
 const formatBalance = (balance: string, decimals: number) => {
   return (Number(balance) / 10 ** decimals).toFixed(2);
@@ -39,7 +40,7 @@ type WalletInfoProps = {
 
 export default function WalletInfo({ onLogout }: WalletInfoProps) {
   // TODO: Replace when we have auth
-  const { wallet } = useWallet("solana-smart-wallet", {});
+  const { wallet } = useWallet("solana-smart-wallet", {}, jwt);
   const [tokens, setTokens] = useState<Token[]>(initialTokens);
 
   useEffect(() => {

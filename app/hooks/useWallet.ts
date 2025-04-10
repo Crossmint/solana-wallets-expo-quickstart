@@ -1,40 +1,82 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { TransferParams, DelegatedSignerParams } from "../types/wallet";
-import { walletService } from "../services/walletService";
+import type { WalletTypeToArgs } from "@crossmint/wallets-sdk";
+import { useQuery } from "@tanstack/react-query";
+import { CrossmintWallets } from "@crossmint/wallets-sdk";
+import { walletApiKey } from "@/app/utils/config";
 
-const WALLET_QUERY_KEY = "wallet";
+export default function useWallet<T extends keyof WalletTypeToArgs>(
+  type: T,
+  args: WalletTypeToArgs[T],
+  jwt?: string
+) {
+  const {
+    data: walletsService,
+    isLoading: isLoadingService,
+    error: serviceError,
+    isError: isServiceError,
+  } = useQuery({
+    queryKey: ["walletsService", jwt],
+    queryFn: () => {
+      if (!jwt) {
+        return null;
+      }
 
-export function useWalletData() {
-  return useQuery({
-    queryKey: [WALLET_QUERY_KEY],
-    queryFn: walletService.getWallet,
-  });
-}
-
-export function useTokenTransfer() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: walletService.transferTokens,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [WALLET_QUERY_KEY] });
+      console.log("Jwt received successfully");
+      console.log({ jwt });
+      return CrossmintWallets.from({
+        apiKey: walletApiKey,
+        jwt,
+      });
     },
+    enabled: !!jwt,
   });
-}
 
-export function useDelegatedSigner() {
-  return useMutation({
-    mutationFn: walletService.addDelegatedSigner,
-  });
-}
-
-export function useTestSol() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: walletService.getTestSol,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [WALLET_QUERY_KEY] });
+  const {
+    data: wallet,
+    isLoading: isLoadingWallet,
+    error: walletError,
+    isError: isWalletError,
+    refetch: refetchWallet,
+  } = useQuery({
+    queryKey: ["wallet", type, args, jwt],
+    queryFn: async () => {
+      if (!walletsService) {
+        return null;
+      }
+      console.log("Getting wallet");
+      try {
+        const result = await walletsService.getOrCreateWallet(type, args);
+        console.log("Wallet retrieved successfully");
+        console.log({ wallet: result.getAddress() });
+        return result;
+      } catch (error) {
+        console.error("Wallet error details:", JSON.stringify(error));
+        throw error;
+      }
     },
+    enabled: !!walletsService,
   });
+
+  const isLoading = isLoadingService || isLoadingWallet;
+  const error = serviceError ?? walletError;
+  const isError = isServiceError || isWalletError;
+
+  return {
+    walletsService,
+    wallet,
+
+    isLoading,
+    isLoadingService,
+    isLoadingWallet,
+
+    error,
+    isError,
+    serviceError,
+    isServiceError,
+    walletError,
+    isWalletError,
+
+    isConnected: !!wallet && !isLoading && !isError,
+
+    reload: refetchWallet,
+  };
 }

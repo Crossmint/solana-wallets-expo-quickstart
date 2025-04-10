@@ -1,7 +1,9 @@
 import Button from "@/app/components/ui/Button";
-import { useTokenTransfer } from "@/app/hooks/useWallet";
+import useWallet from "@/app/hooks/useWallet";
 import type { TokenSymbol } from "@/app/types/wallet";
-import React, { useState } from "react";
+import { createTokenTransferTransaction } from "@/app/utils";
+import { usdcDevnetTokenMint } from "@/app/utils/config";
+import React, { useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -11,23 +13,27 @@ import {
 } from "react-native";
 
 export default function TransferForm() {
+  // TODO: Replace when we have auth
+  const { wallet } = useWallet("solana-smart-wallet", {});
   const [amount, setAmount] = useState("");
   const [recipientAddress, setRecipientAddress] = useState("");
   const [selectedToken, setSelectedToken] = useState<TokenSymbol>("SOL");
 
-  const { mutate: transferTokens, isPending } = useTokenTransfer();
-
-  const handleTransfer = () => {
-    transferTokens({
-      token: selectedToken,
-      amount,
+  const handleTransfer = useCallback(async () => {
+    const transaction = await createTokenTransferTransaction(
+      "EbXL4e6XgbcC7s33cD5EZtyn5nixRDsieBjPQB7zf448",
       recipientAddress,
-    });
+      usdcDevnetTokenMint,
+      Number(amount)
+    );
+
+    console.log("Transaction created");
+    console.log({ transaction });
 
     // Reset form after submission
     setAmount("");
     setRecipientAddress("");
-  };
+  }, [amount, recipientAddress]);
 
   return (
     <View style={styles.container}>
@@ -93,7 +99,7 @@ export default function TransferForm() {
         <Button
           title="Transfer"
           onPress={handleTransfer}
-          disabled={!amount || !recipientAddress || isPending}
+          disabled={!amount || !recipientAddress}
         />
       </View>
     </View>

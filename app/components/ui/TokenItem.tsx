@@ -1,6 +1,6 @@
+import type { Token } from "@/app/types/wallet";
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import type { Token } from "../../types/wallet";
 
 type TokenItemProps = {
   token: Token;

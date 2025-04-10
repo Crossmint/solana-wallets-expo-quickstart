@@ -28,13 +28,11 @@ const initialTokens: Token[] = [
     symbol: "SOL",
     name: "Solana",
     balance: "0",
-    logo: require("@/assets/images/solana-sol-logo.png"),
   },
   {
     symbol: "USDC",
     name: "USDC",
     balance: "0",
-    logo: require("@/assets/images/usd-coin-usdc-logo.png"),
   },
 ];
 

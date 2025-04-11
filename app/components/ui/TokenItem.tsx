@@ -1,6 +1,7 @@
+import type { Token } from "@/app/types/wallet";
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import type { Token } from "../../types/wallet";
+import TokenLogo from "./TokenLogo";
 
 type TokenItemProps = {
   token: Token;
@@ -11,7 +12,7 @@ export default function TokenItem({ token }: TokenItemProps) {
     <View style={styles.tokenRow}>
       <View style={styles.tokenInfo}>
         <View style={styles.tokenLogoContainer}>
-          <Text style={styles.tokenLogo}>{token.logo}</Text>
+          <TokenLogo symbol={token.symbol} />
         </View>
         <Text style={styles.tokenName}>{token.name}</Text>
       </View>
@@ -39,9 +40,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 8,
-  },
-  tokenLogo: {
-    fontSize: 20,
   },
   tokenName: {
     fontSize: 16,

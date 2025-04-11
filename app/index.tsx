@@ -18,9 +18,7 @@ export default function LoginScreen() {
       <View style={styles.container}>
         <View style={styles.content}>
           <Image
-            source={{
-              uri: "https://www.crossmint.com/assets/crossmint/logo/v2",
-            }}
+            source={require("@/assets/images/crossmint-original.png")}
             style={styles.logo}
           />
           <Text style={styles.title}>Solana Wallets Quickstart</Text>

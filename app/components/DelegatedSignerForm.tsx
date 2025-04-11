@@ -1,14 +1,13 @@
 import Button from "@/app/components/ui/Button";
-import { useDelegatedSigner } from "@/app/hooks/useWallet";
 import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 
 export default function DelegatedSignerForm() {
   const [delegatedSignerAddress, setDelegatedSignerAddress] = useState("");
-  const { mutate: addDelegatedSigner, isPending } = useDelegatedSigner();
 
   const handleAddDelegatedSigner = () => {
-    addDelegatedSigner({ signerAddress: delegatedSignerAddress });
+    // TODO: Implement delegated signer
+    console.log("Delegated signer address:", delegatedSignerAddress);
     // Reset form after submission
     setDelegatedSignerAddress("");
   };
@@ -31,7 +30,7 @@ export default function DelegatedSignerForm() {
       <Button
         title="Add Delegated Signer"
         onPress={handleAddDelegatedSigner}
-        disabled={!delegatedSignerAddress || isPending}
+        disabled={!delegatedSignerAddress}
       />
     </View>
   );

@@ -1,6 +1,9 @@
 import Button from "@/app/components/ui/Button";
-import { useTokenTransfer } from "@/app/hooks/useWallet";
+import useWallet from "@/app/hooks/useWallet";
 import type { TokenSymbol } from "@/app/types/wallet";
+import { createTokenTransferTransaction } from "@/app/utils";
+import { jwt, usdcDevnetTokenMint } from "@/app/utils/config";
+import { useMutation } from "@tanstack/react-query";
 import React, { useState } from "react";
 import {
   View,
@@ -8,31 +11,76 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from "react-native";
 
 export default function TransferForm() {
+  // TODO: Replace when we have auth
+  const { wallet } = useWallet("solana-smart-wallet", {}, jwt);
   const [amount, setAmount] = useState("");
   const [recipientAddress, setRecipientAddress] = useState("");
   const [selectedToken, setSelectedToken] = useState<TokenSymbol>("SOL");
+  const [successSignature, setSuccessSignature] = useState<string | null>(null);
 
-  const { mutate: transferTokens, isPending } = useTokenTransfer();
+  const { mutate: handleTransfer, isPending } = useMutation({
+    mutationFn: async () => {
+      if (!wallet) {
+        return;
+      }
+      const transaction = await createTokenTransferTransaction(
+        wallet.getAddress(),
+        recipientAddress,
+        usdcDevnetTokenMint,
+        Number(amount)
+      );
 
-  const handleTransfer = () => {
-    transferTokens({
-      token: selectedToken,
-      amount,
-      recipientAddress,
-    });
+      console.log("Transaction created");
+      console.log({ transaction });
 
-    // Reset form after submission
-    setAmount("");
-    setRecipientAddress("");
-  };
+      console.log("Sending transaction");
+      const hash = await wallet.sendTransaction({
+        transaction,
+      });
+
+      console.log("Transaction sent");
+      console.log({ hash });
+
+      return hash;
+    },
+    mutationKey: ["transfer", wallet?.getAddress(), recipientAddress, amount],
+    onSuccess: (signature) => {
+      if (signature) {
+        setSuccessSignature(signature);
+        setAmount("");
+        setRecipientAddress("");
+      }
+    },
+    onError: (error) => {
+      console.error("Transfer error:", error);
+      Alert.alert(
+        "Transfer Failed",
+        "There was an error processing your transfer. Please try again."
+      );
+    },
+  });
 
   return (
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>Transfer funds</Text>
       <Text style={styles.sectionSubtitle}>Send funds to another wallet</Text>
+
+      {successSignature && (
+        <View style={styles.successMessage}>
+          <Text style={styles.successText}>Transfer successful!</Text>
+          <Text style={styles.signatureText}>
+            Signature: {successSignature.slice(0, 8)}...
+            {successSignature.slice(-8)}
+          </Text>
+          <TouchableOpacity onPress={() => setSuccessSignature(null)}>
+            <Text style={styles.dismissText}>Dismiss</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <View style={styles.formSection}>
         <Text style={styles.formLabel}>Token</Text>
@@ -94,6 +142,7 @@ export default function TransferForm() {
           title="Transfer"
           onPress={handleTransfer}
           disabled={!amount || !recipientAddress || isPending}
+          loading={isPending}
         />
       </View>
     </View>
@@ -159,5 +208,26 @@ const styles = StyleSheet.create({
     height: 10,
     borderRadius: 5,
     backgroundColor: "#00C853",
+  },
+  successMessage: {
+    backgroundColor: "#E8F5E9",
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 16,
+  },
+  successText: {
+    color: "#00C853",
+    fontWeight: "600",
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  signatureText: {
+    fontSize: 14,
+    color: "#333",
+    marginBottom: 8,
+  },
+  dismissText: {
+    color: "#00C853",
+    fontWeight: "500",
   },
 });

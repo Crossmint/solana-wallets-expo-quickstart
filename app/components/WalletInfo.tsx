@@ -1,23 +1,91 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Linking,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
-import { useTestSol, useWalletData } from "@/app/hooks/useWallet";
 import TokenItem from "@/app/components/ui/TokenItem";
 import Button from "@/app/components/ui/Button";
 import { router } from "expo-router";
+import useWallet from "@/app/hooks/useWallet";
+import type { Token } from "@/app/types/wallet";
+import { jwt } from "@/app/utils/config";
+
+const formatBalance = (balance: string, decimals: number) => {
+  return (Number(balance) / 10 ** decimals).toFixed(2);
+};
+
+const formatWalletAddress = (address: string) => {
+  return `${address.slice(0, 4)}...${address.slice(-4)}`;
+};
+
+const initialTokens: Token[] = [
+  {
+    symbol: "SOL",
+    name: "Solana",
+    balance: "0",
+  },
+  {
+    symbol: "USDC",
+    name: "USDC",
+    balance: "0",
+  },
+];
 
 type WalletInfoProps = {
   onLogout: () => void;
 };
 
 export default function WalletInfo({ onLogout }: WalletInfoProps) {
-  const { data: wallet, isLoading } = useWalletData();
-  const { mutate: getTestSol, isPending: isGettingTestSol } = useTestSol();
+  // TODO: Replace when we have auth
+  const { wallet } = useWallet("solana-smart-wallet", {}, jwt);
+  const [tokens, setTokens] = useState<Token[]>(initialTokens);
+
+  useEffect(() => {
+    const fetchBalances = async () => {
+      if (!wallet) {
+        return;
+      }
+      try {
+        const balances = await wallet.balances(["sol", "usdc"]);
+        if (!Array.isArray(balances)) {
+          return;
+        }
+
+        const solBalance = formatBalance(
+          balances.find((t) => t.token === "sol")?.balances.total || "0",
+          9
+        );
+        const usdcBalance = formatBalance(
+          balances.find((t) => t.token === "usdc")?.balances.total || "0",
+          6
+        );
+
+        setTokens(
+          tokens.map((t) => {
+            if (t.symbol === "SOL") {
+              return { ...t, balance: solBalance };
+            }
+            if (t.symbol === "USDC") {
+              return { ...t, balance: usdcBalance };
+            }
+            return t;
+          })
+        );
+      } catch (error) {
+        console.error("Error fetching wallet balances:", error);
+      }
+    };
+    fetchBalances();
+  }, [wallet, tokens]);
 
   const handleCopyAddress = async () => {
-    if (wallet?.address) {
-      await Clipboard.setStringAsync(wallet.address);
+    if (wallet?.getAddress()) {
+      await Clipboard.setStringAsync(wallet.getAddress());
     }
   };
 
@@ -29,7 +97,23 @@ export default function WalletInfo({ onLogout }: WalletInfoProps) {
     }
   };
 
-  if (isLoading || !wallet) {
+  const getTestSol = async () => {
+    try {
+      await Linking.openURL("https://faucet.solana.com");
+    } catch (error) {
+      console.error("Error opening Solana faucet:", error);
+    }
+  };
+
+  const getTestUsdc = async () => {
+    try {
+      await Linking.openURL("https://faucet.circle.com");
+    } catch (error) {
+      console.error("Error opening Circle faucet:", error);
+    }
+  };
+
+  if (!wallet) {
     return (
       <View style={styles.container}>
         <Text>Loading wallet information...</Text>
@@ -42,7 +126,9 @@ export default function WalletInfo({ onLogout }: WalletInfoProps) {
       <View style={styles.walletHeader}>
         <Text style={styles.walletTitle}>Your wallet</Text>
         <View style={styles.addressContainer}>
-          <Text style={styles.walletAddress}>{wallet.address}</Text>
+          <Text style={styles.walletAddress}>
+            {formatWalletAddress(wallet.getAddress())}
+          </Text>
           <TouchableOpacity
             style={styles.copyButton}
             onPress={handleCopyAddress}
@@ -53,7 +139,7 @@ export default function WalletInfo({ onLogout }: WalletInfoProps) {
       </View>
 
       <View style={styles.tokenContainer}>
-        {wallet.tokens.map((token) => (
+        {tokens.map((token) => (
           <TokenItem key={token.symbol} token={token} />
         ))}
       </View>
@@ -62,14 +148,13 @@ export default function WalletInfo({ onLogout }: WalletInfoProps) {
         <Button
           title="+ Get free test SOL"
           variant="secondary"
-          onPress={() => getTestSol()}
-          disabled={isGettingTestSol}
+          onPress={getTestSol}
         />
         <View style={styles.spacer} />
         <Button
-          title="+ Get test USDC (coming soon)"
+          title="+ Get test USDC"
           variant="secondary"
-          disabled
+          onPress={getTestUsdc}
         />
         <View style={styles.spacer} />
         <Button

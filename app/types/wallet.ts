@@ -4,7 +4,6 @@ export interface Token {
   symbol: TokenSymbol;
   name: string;
   balance: string;
-  logo: string;
 }
 
 export interface Wallet {

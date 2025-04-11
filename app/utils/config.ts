@@ -3,6 +3,9 @@ export const walletApiKey = process.env
 
 export const appId = process.env.EXPO_PUBLIC_CROSSMINT_APP_ID as string;
 
+// TODO: replace when auth is ready
+export const jwt = process.env.EXPO_PUBLIC_JWT as string;
+
 export const usdcDevnetTokenMint =
   "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU";
 

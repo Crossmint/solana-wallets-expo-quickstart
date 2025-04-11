@@ -1,22 +1,25 @@
 export type TokenSymbol = "SOL" | "USDC";
 
-export interface Token {
-  symbol: TokenSymbol;
-  name: string;
-  balance: string;
+export interface TokenDefinition {
+	symbol: TokenSymbol;
+	name: string;
+}
+
+export interface Token extends TokenDefinition {
+	balance: string;
 }
 
 export interface Wallet {
-  address: string;
-  tokens: Token[];
+	address: string;
+	tokens: Token[];
 }
 
 export interface TransferParams {
-  token: TokenSymbol;
-  amount: string;
-  recipientAddress: string;
+	token: TokenSymbol;
+	amount: string;
+	recipientAddress: string;
 }
 
 export interface DelegatedSignerParams {
-  signerAddress: string;
+	signerAddress: string;
 }

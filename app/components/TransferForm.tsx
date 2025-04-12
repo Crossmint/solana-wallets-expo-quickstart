@@ -1,8 +1,5 @@
 import Button from "@/app/components/ui/Button";
-import {
-	type SolanaSmartWallet,
-	useWallet,
-} from "@crossmint/client-sdk-react-native-ui";
+import { useWallet } from "@crossmint/client-sdk-react-native-ui";
 import type { TokenSymbol } from "@/app/types/wallet";
 import {
 	createTokenTransferTransaction,
@@ -21,7 +18,7 @@ import {
 } from "react-native";
 
 export default function TransferForm() {
-	const { wallet } = useWallet();
+	const { wallet, type } = useWallet();
 	const [amount, setAmount] = useState("");
 	const [recipientAddress, setRecipientAddress] = useState("");
 	const [selectedToken, setSelectedToken] = useState<TokenSymbol>("SOL");
@@ -29,7 +26,7 @@ export default function TransferForm() {
 
 	const { mutate: handleTransfer, isPending } = useMutation({
 		mutationFn: async () => {
-			if (!wallet) {
+			if (wallet == null || type !== "solana-smart-wallet") {
 				return;
 			}
 			const transaction =
@@ -50,7 +47,7 @@ export default function TransferForm() {
 			console.log({ transaction });
 
 			console.log("Sending transaction");
-			const hash = ((await wallet) as SolanaSmartWallet).sendTransaction({
+			const hash = await wallet.sendTransaction({
 				transaction,
 			});
 

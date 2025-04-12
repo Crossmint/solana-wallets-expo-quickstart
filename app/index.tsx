@@ -4,9 +4,17 @@ import AppLayout from "@/app/components/layout/AppLayout";
 import Button from "@/app/components/ui/Button";
 import { useCrossmintAuth } from "@crossmint/client-sdk-react-native-ui";
 import { useEffect } from "react";
+import * as Linking from "expo-linking";
 
 export default function LoginScreen() {
-	const { loginWithOAuth, user, oauthUrlMap } = useCrossmintAuth();
+	const { loginWithOAuth, createAuthSession, user } = useCrossmintAuth();
+	const url = Linking.useURL();
+
+	useEffect(() => {
+		if (url != null) {
+			createAuthSession(url);
+		}
+	}, [url, createAuthSession]);
 
 	useEffect(() => {
 		if (user != null) {
@@ -26,10 +34,10 @@ export default function LoginScreen() {
 					<Text style={styles.subtitle}>The easiest way to build onchain</Text>
 
 					<View style={styles.buttonContainer}>
-						{oauthUrlMap.google == null && <Text>Loading...</Text>}
-						{oauthUrlMap.google && (
-							<Button title="Login" onPress={() => loginWithOAuth("google")} />
-						)}
+						<Button
+							title="Login with Google"
+							onPress={() => loginWithOAuth("google")}
+						/>
 					</View>
 				</View>
 			</View>

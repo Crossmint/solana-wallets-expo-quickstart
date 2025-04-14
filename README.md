@@ -51,8 +51,7 @@ cp .env.template .env
 
 4. Get a Crossmint API key from [here](https://docs.crossmint.com/introduction/platform/api-keys/client-side) and add it to the `.env` file.
 ```bash
-NEXT_PUBLIC_CROSSMINT_API_KEY=your_api_key
-EXPO_PUBLIC_CROSSMINT_APP_ID="CROSSMINT_APP_ID"
+EXPO_PUBLIC_CLIENT_CROSSMINT_API_KEY=your_api_key
 ```
 
 5. Run the development server:

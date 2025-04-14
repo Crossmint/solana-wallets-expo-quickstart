@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { StyleSheet, ScrollView } from "react-native";
-import { router } from "expo-router";
 import type { TabItem } from "@/app/components/ui/TabNavigation";
 import AppLayout from "@/app/components/layout/AppLayout";
 import WalletInfo from "@/app/components/WalletInfo";

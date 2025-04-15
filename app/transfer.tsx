@@ -5,7 +5,6 @@ import {
 	createTokenTransferTransaction,
 	createNativeTransferTransaction,
 } from "../lib/createTransaction";
-import { usdcDevnetTokenMint } from "../lib/config";
 import { useMutation } from "@tanstack/react-query";
 import React, { useState } from "react";
 import {
@@ -39,7 +38,8 @@ export default function Transfer() {
 					: await createTokenTransferTransaction(
 							wallet.address,
 							recipientAddress,
-							usdcDevnetTokenMint,
+							process.env.EXPO_PUBLIC_USDC_TOKEN_MINT ||
+								"4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
 							Number(amount),
 						);
 

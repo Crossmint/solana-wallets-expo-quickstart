@@ -14,7 +14,10 @@ import {
 	ASSOCIATED_TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 
-const connection = new Connection("https://api.devnet.solana.com", "confirmed");
+const connection = new Connection(
+	process.env.EXPO_PUBLIC_RPC_URL || "https://api.devnet.solana.com",
+	"confirmed",
+);
 
 export const createTokenTransferTransaction = async (
 	from: string,

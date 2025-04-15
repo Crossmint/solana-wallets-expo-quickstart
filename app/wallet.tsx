@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { View } from "react-native";
 
 import type { TabItem } from "../components/TabNavigation";
 import MainLayout from "../components/MainLayout";
 import Transfer from "./transfer";
-import DelegatedSignerForm from "./delegate-signer";
+import DelegatedSigners from "./delegate-signer";
 import Balance from "./balance";
 
 import { useCrossmintAuth } from "@crossmint/client-sdk-react-native-ui";
@@ -36,7 +35,7 @@ export default function Wallet() {
 		>
 			{activeTab === "wallet" && <Balance />}
 			{activeTab === "transfer" && <Transfer />}
-			{activeTab === "delegated" && <DelegatedSignerForm />}
+			{activeTab === "delegated" && <DelegatedSigners />}
 		</MainLayout>
 	);
 }

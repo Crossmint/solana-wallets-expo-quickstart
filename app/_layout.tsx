@@ -1,7 +1,6 @@
 import React from "react";
 import { Stack } from "expo-router";
-import { SafeAreaView, StyleSheet, View } from "react-native";
-import { StatusBar } from "expo-status-bar";
+import { StyleSheet, View } from "react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import CrossmintProviders from "./providers";
 

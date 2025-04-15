@@ -6,7 +6,6 @@ import CrossmintLogo from "../components/icons/CrossmintLogo";
 import GoogleIcon from "../components/icons/GoogleIcon";
 import CrossmintLeaf from "@/components/icons/CrossmintLeaf";
 import { router } from "expo-router";
-import MainLayout from "../components/MainLayout";
 
 export default function Login() {
 	const { loginWithOAuth, user } = useCrossmintAuth();
@@ -46,7 +45,13 @@ export default function Login() {
 				title="Sign in with Google"
 				onPress={() => {
 					console.log("Initiating Google login");
-					loginWithOAuth("google");
+					try {
+						loginWithOAuth("google").catch((err) => {
+							console.error("OAuth login error:", err);
+						});
+					} catch (error) {
+						console.error("Failed to initiate login:", error);
+					}
 				}}
 				variant="secondary"
 				icon={<GoogleIcon />}

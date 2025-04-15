@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import TokenItem from "../components/TokenItem";
 import Button from "../components/Button";
-import { router } from "expo-router";
 import type { Token, TokenDefinition, TokenSymbol } from "../types/wallet";
-import { useWallet } from "@crossmint/client-sdk-react-native-ui";
+import {
+	useWallet,
+	WalletBalance,
+} from "@crossmint/client-sdk-react-native-ui";
 import SolanaIcon from "../components/icons/SolanaIcon";
 import USDCIcon from "../components/icons/USDCIcon";
 import { Linking } from "react-native";

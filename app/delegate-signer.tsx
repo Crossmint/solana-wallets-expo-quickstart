@@ -1,9 +1,9 @@
-import Button from "@/app/components/ui/Button";
+import { useWallet } from "@crossmint/client-sdk-react-native-ui";
+import Button from "../components/Button";
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, StyleSheet, Linking } from "react-native";
-import { useWallet } from "@crossmint/client-sdk-react-native-ui";
 
-export default function DelegatedSignerForm() {
+export default function DelegateSigners() {
 	const { wallet, type } = useWallet();
 	const [isLoading, setIsLoading] = useState(false);
 	// TODO: delegatedSigners should be typed
@@ -93,15 +93,14 @@ export default function DelegatedSignerForm() {
 
 const styles = StyleSheet.create({
 	container: {
-		padding: 20,
+		paddingHorizontal: 20,
 	},
 	sectionTitle: {
-		fontSize: 20,
-		fontWeight: "700",
-		marginBottom: 8,
+		fontSize: 18,
+		marginBottom: 4,
 	},
 	sectionSubtitle: {
-		fontSize: 16,
+		fontSize: 14,
 		color: "#666",
 		marginBottom: 24,
 	},
@@ -110,8 +109,7 @@ const styles = StyleSheet.create({
 		textDecorationLine: "underline",
 	},
 	formLabel: {
-		fontSize: 16,
-		fontWeight: "500",
+		fontSize: 14,
 		marginBottom: 8,
 		marginTop: 16,
 	},
@@ -120,7 +118,7 @@ const styles = StyleSheet.create({
 		borderColor: "#ddd",
 		borderRadius: 8,
 		padding: 12,
-		fontSize: 16,
+		fontSize: 14,
 		marginBottom: 16,
 	},
 	signersContainer: {

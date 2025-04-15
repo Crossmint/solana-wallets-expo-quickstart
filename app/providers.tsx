@@ -1,16 +1,17 @@
-import { walletApiKey } from "@/app/utils/config";
-import type { ReactNode } from "react";
 import {
 	CrossmintAuthProvider,
 	CrossmintProvider,
 	CrossmintWalletProvider,
 } from "@crossmint/client-sdk-react-native-ui";
+import { apiKey } from "@/lib/config";
 
-export default function CrossmintProviders({
-	children,
-}: { children: ReactNode }) {
+type ProvidersProps = {
+	children: React.ReactNode;
+};
+
+export default function CrossmintProviders({ children }: ProvidersProps) {
 	return (
-		<CrossmintProvider apiKey={walletApiKey}>
+		<CrossmintProvider apiKey={apiKey}>
 			<CrossmintAuthProvider>
 				<CrossmintWalletProvider>{children}</CrossmintWalletProvider>
 			</CrossmintAuthProvider>

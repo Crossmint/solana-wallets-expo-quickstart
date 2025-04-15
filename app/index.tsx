@@ -1,13 +1,11 @@
-import { Image, StyleSheet, Text, View } from "react-native";
-import { router } from "expo-router";
-import AppLayout from "@/app/components/layout/AppLayout";
-import Button from "@/app/components/ui/Button";
+import { Redirect } from "expo-router";
 import { useCrossmintAuth } from "@crossmint/client-sdk-react-native-ui";
 import { useEffect } from "react";
 import * as Linking from "expo-linking";
+import { View, ActivityIndicator } from "react-native";
 
-export default function LoginScreen() {
-	const { loginWithOAuth, createAuthSession, user } = useCrossmintAuth();
+export default function Index() {
+	const { createAuthSession, status } = useCrossmintAuth();
 	const url = Linking.useURL();
 
 	useEffect(() => {
@@ -16,65 +14,14 @@ export default function LoginScreen() {
 		}
 	}, [url, createAuthSession]);
 
-	useEffect(() => {
-		if (user != null) {
-			router.push("/wallet");
-		}
-	}, [user]);
-
-	return (
-		<AppLayout>
-			<View style={styles.container}>
-				<View style={styles.content}>
-					<Image
-						source={require("@/assets/images/crossmint-original.png")}
-						style={styles.logo}
-					/>
-					<Text style={styles.title}>Solana Wallets Quickstart</Text>
-					<Text style={styles.subtitle}>The easiest way to build onchain</Text>
-
-					<View style={styles.buttonContainer}>
-						<Button
-							title="Login with Google"
-							onPress={() => loginWithOAuth("google")}
-						/>
-					</View>
-				</View>
+	if (status === "initializing" || status === "in-progress") {
+		return (
+			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+				<ActivityIndicator size="large" />
 			</View>
-		</AppLayout>
-	);
-}
+		);
+	}
 
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: "#fff",
-	},
-	content: {
-		padding: 20,
-		marginTop: "20%",
-		alignItems: "center",
-	},
-	logo: {
-		width: 150,
-		height: 40,
-		resizeMode: "contain",
-		marginBottom: 24,
-	},
-	title: {
-		fontSize: 28,
-		fontWeight: "700",
-		textAlign: "center",
-		marginBottom: 8,
-	},
-	subtitle: {
-		fontSize: 16,
-		color: "#666",
-		textAlign: "center",
-		marginBottom: 40,
-	},
-	buttonContainer: {
-		width: "100%",
-		marginTop: 24,
-	},
-});
+	// If we have a user, redirect to wallet, otherwise to login
+	return <Redirect href={status === "logged-in" ? "/wallet" : "/login"} />;
+}

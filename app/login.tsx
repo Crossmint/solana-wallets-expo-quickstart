@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TextInput } from "react-native";
 import Button from "../components/Button";
 import { useCrossmintAuth } from "@crossmint/client-sdk-react-native-ui";
@@ -8,13 +8,33 @@ import CrossmintLeaf from "@/components/icons/CrossmintLeaf";
 import { router } from "expo-router";
 
 export default function Login() {
-	const { loginWithOAuth, user } = useCrossmintAuth();
+	const { loginWithOAuth, createAuthSession, user, crossmintAuth } =
+		useCrossmintAuth();
+	const [email, setEmail] = useState("");
+	const [emailId, setEmailId] = useState("");
+	const [otpSent, setOtpSent] = useState(false);
+	const [otp, setOtp] = useState("");
 
 	useEffect(() => {
 		if (user != null) {
 			router.push("/wallet");
 		}
 	}, [user]);
+
+	const handleSendOtp = async () => {
+		const res = await crossmintAuth?.sendEmailOtp(email);
+		setEmailId(res.emailId);
+		setOtpSent(true);
+	};
+
+	const handleVerifyOtp = async () => {
+		const oneTimeSecret = await crossmintAuth?.confirmEmailOtp(
+			email,
+			emailId,
+			otp,
+		);
+		await createAuthSession(oneTimeSecret);
+	};
 
 	return (
 		<View style={styles.content}>
@@ -31,9 +51,39 @@ export default function Login() {
 				keyboardType="email-address"
 				autoCapitalize="none"
 				autoCorrect={false}
+				value={email}
+				onChangeText={setEmail}
+				editable={!otpSent}
 			/>
 
-			<Button title="Sign in" onPress={() => {}} variant="primary" />
+			{!otpSent ? (
+				<Button title="Sign in" onPress={handleSendOtp} variant="primary" />
+			) : (
+				<>
+					<TextInput
+						style={styles.input}
+						placeholder="Enter OTP code"
+						placeholderTextColor="#666"
+						keyboardType="number-pad"
+						autoCapitalize="none"
+						autoCorrect={false}
+						value={otp}
+						onChangeText={setOtp}
+					/>
+					<View style={styles.otpButtonsContainer}>
+						<Button
+							title="Verify OTP"
+							onPress={handleVerifyOtp}
+							variant="primary"
+						/>
+						<Button
+							title="Back"
+							onPress={() => setOtpSent(false)}
+							variant="secondary"
+						/>
+					</View>
+				</>
+			)}
 
 			<View style={styles.orContainer}>
 				<View style={styles.orLine} />
@@ -43,16 +93,7 @@ export default function Login() {
 
 			<Button
 				title="Sign in with Google"
-				onPress={() => {
-					console.log("Initiating Google login");
-					try {
-						loginWithOAuth("google").catch((err) => {
-							console.error("OAuth login error:", err);
-						});
-					} catch (error) {
-						console.error("Failed to initiate login:", error);
-					}
-				}}
+				onPress={() => loginWithOAuth("google")}
 				variant="secondary"
 				icon={<GoogleIcon />}
 			/>
@@ -125,5 +166,11 @@ const styles = StyleSheet.create({
 	poweredByIcon: {
 		width: 16,
 		height: 16,
+	},
+	otpButtonsContainer: {
+		width: "100%",
+		flexDirection: "row",
+		justifyContent: "space-between",
+		gap: 8,
 	},
 });

@@ -1,11 +1,11 @@
-import Button from "@/app/components/ui/Button";
+import Button from "../components/Button";
 import { useWallet } from "@crossmint/client-sdk-react-native-ui";
-import type { TokenSymbol } from "@/app/types/wallet";
+import type { TokenSymbol } from "../types/wallet";
 import {
 	createTokenTransferTransaction,
 	createNativeTransferTransaction,
-} from "@/app/utils";
-import { usdcDevnetTokenMint } from "@/app/utils/config";
+} from "../lib/createTransaction";
+import { usdcDevnetTokenMint } from "../lib/config";
 import { useMutation } from "@tanstack/react-query";
 import React, { useState } from "react";
 import {
@@ -17,7 +17,7 @@ import {
 	Alert,
 } from "react-native";
 
-export default function TransferForm() {
+export default function Transfer() {
 	const { wallet, type } = useWallet();
 	const [amount, setAmount] = useState("");
 	const [recipientAddress, setRecipientAddress] = useState("");
@@ -105,13 +105,7 @@ export default function TransferForm() {
 								<View style={styles.radioButtonInner} />
 							)}
 						</View>
-						<Text
-							style={
-								selectedToken === "USDC" ? styles.selectedTokenText : undefined
-							}
-						>
-							USDC
-						</Text>
+						<Text>USDC</Text>
 					</TouchableOpacity>
 					<TouchableOpacity
 						style={styles.tokenOption}
@@ -122,13 +116,7 @@ export default function TransferForm() {
 								<View style={styles.radioButtonInner} />
 							)}
 						</View>
-						<Text
-							style={
-								selectedToken === "SOL" ? styles.selectedTokenText : undefined
-							}
-						>
-							SOL
-						</Text>
+						<Text>SOL</Text>
 					</TouchableOpacity>
 				</View>
 
@@ -151,7 +139,7 @@ export default function TransferForm() {
 
 				<Button
 					title="Transfer"
-					onPress={handleTransfer}
+					onPress={() => handleTransfer()}
 					disabled={!amount || !recipientAddress || isPending}
 					loading={isPending}
 				/>
@@ -162,15 +150,15 @@ export default function TransferForm() {
 
 const styles = StyleSheet.create({
 	container: {
-		padding: 20,
+		flex: 1,
+		paddingHorizontal: 20,
 	},
 	sectionTitle: {
-		fontSize: 20,
-		fontWeight: "700",
-		marginBottom: 8,
+		fontSize: 18,
+		marginBottom: 4,
 	},
 	sectionSubtitle: {
-		fontSize: 16,
+		fontSize: 14,
 		color: "#666",
 		marginBottom: 24,
 	},
@@ -178,8 +166,7 @@ const styles = StyleSheet.create({
 		width: "100%",
 	},
 	formLabel: {
-		fontSize: 16,
-		fontWeight: "500",
+		fontSize: 14,
 		marginBottom: 8,
 		marginTop: 16,
 	},
@@ -188,8 +175,9 @@ const styles = StyleSheet.create({
 		borderColor: "#ddd",
 		borderRadius: 8,
 		padding: 12,
-		fontSize: 16,
+		fontSize: 14,
 		marginBottom: 16,
+		backgroundColor: "#fff",
 	},
 	tokenSelector: {
 		flexDirection: "row",
@@ -199,17 +187,13 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		alignItems: "center",
 		marginRight: 24,
-		paddingVertical: 8,
-	},
-	selectedTokenText: {
-		fontWeight: "600",
 	},
 	radioButton: {
 		width: 20,
 		height: 20,
 		borderRadius: 10,
 		borderWidth: 2,
-		borderColor: "#00C853",
+		borderColor: "#666",
 		marginRight: 8,
 		justifyContent: "center",
 		alignItems: "center",
@@ -218,27 +202,27 @@ const styles = StyleSheet.create({
 		width: 10,
 		height: 10,
 		borderRadius: 5,
-		backgroundColor: "#00C853",
+		backgroundColor: "#05b959",
 	},
 	successMessage: {
-		backgroundColor: "#E8F5E9",
-		borderRadius: 8,
+		backgroundColor: "#e6ffe6",
 		padding: 16,
-		marginBottom: 16,
+		borderRadius: 12,
+		marginBottom: 24,
 	},
 	successText: {
-		color: "#00C853",
-		fontWeight: "600",
+		color: "#008000",
 		fontSize: 16,
 		marginBottom: 8,
 	},
 	signatureText: {
+		color: "#666",
 		fontSize: 14,
-		color: "#333",
 		marginBottom: 8,
 	},
 	dismissText: {
-		color: "#00C853",
-		fontWeight: "500",
+		color: "#008000",
+		fontSize: 14,
+		textDecorationLine: "underline",
 	},
 });

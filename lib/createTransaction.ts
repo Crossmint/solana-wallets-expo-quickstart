@@ -108,5 +108,3 @@ export const createNativeTransferTransaction = async (
 	}).compileToV0Message();
 	return new VersionedTransaction(message);
 };
-
-export default createTokenTransferTransaction;

@@ -1,25 +1,16 @@
 import React, { useEffect, useState } from "react";
-import {
-	View,
-	Text,
-	TouchableOpacity,
-	StyleSheet,
-	Linking,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import * as Clipboard from "expo-clipboard";
-import TokenItem from "@/app/components/ui/TokenItem";
-import Button from "@/app/components/ui/Button";
+import { View, Text, StyleSheet } from "react-native";
+import TokenItem from "../components/TokenItem";
+import Button from "../components/Button";
 import { router } from "expo-router";
-import type { Token, TokenDefinition, TokenSymbol } from "@/app/types/wallet";
+import type { Token, TokenDefinition, TokenSymbol } from "../types/wallet";
 import { useWallet } from "@crossmint/client-sdk-react-native-ui";
+import SolanaIcon from "../components/icons/SolanaIcon";
+import USDCIcon from "../components/icons/USDCIcon";
+import { Linking } from "react-native";
 
 const formatBalance = (balance: string, decimals: number) => {
 	return (Number(balance) / 10 ** decimals).toFixed(2);
-};
-
-const formatWalletAddress = (address: string) => {
-	return `${address.slice(0, 4)}...${address.slice(-4)}`;
 };
 
 const tokenDefinitions: Record<TokenSymbol, TokenDefinition> = {
@@ -38,11 +29,7 @@ const initialTokens: Token[] = [
 	{ ...tokenDefinitions.USDC, balance: "0" },
 ];
 
-type WalletInfoProps = {
-	onLogout: () => void;
-};
-
-export default function WalletInfo({ onLogout }: WalletInfoProps) {
+export default function Balance() {
 	const { wallet, getOrCreateWallet } = useWallet();
 	const [tokenList, setTokenList] = useState<Token[]>(initialTokens);
 
@@ -86,20 +73,6 @@ export default function WalletInfo({ onLogout }: WalletInfoProps) {
 		fetchBalances();
 	}, [wallet]);
 
-	const handleCopyAddress = async () => {
-		if (wallet?.address) {
-			await Clipboard.setStringAsync(wallet.address);
-		}
-	};
-
-	const handleOpenBrowser = () => {
-		try {
-			router.push("/browser");
-		} catch (e) {
-			console.error("Navigation error:", e);
-		}
-	};
-
 	const getTestSol = async () => {
 		try {
 			await Linking.openURL("https://faucet.solana.com");
@@ -126,47 +99,33 @@ export default function WalletInfo({ onLogout }: WalletInfoProps) {
 
 	return (
 		<View style={styles.container}>
-			<View style={styles.walletHeader}>
-				<Text style={styles.walletTitle}>Your wallet</Text>
-				<View style={styles.addressContainer}>
-					<Text style={styles.walletAddress}>
-						{formatWalletAddress(wallet.address)}
-					</Text>
-					<TouchableOpacity
-						style={styles.copyButton}
-						onPress={handleCopyAddress}
-					>
-						<Ionicons name="copy-outline" size={20} color="#333" />
-					</TouchableOpacity>
-				</View>
+			<View style={styles.balanceHeader}>
+				<Text style={styles.sectionTitle}>Wallet balance</Text>
+				<Text style={styles.sectionSubtitle}>Check the wallet balance</Text>
 			</View>
 
-			<View style={styles.tokenContainer}>
-				{tokenList.map((token) => (
-					<TokenItem key={token.symbol} token={token} />
+			<View>
+				{tokenList.map((token, index) => (
+					<React.Fragment key={token.symbol}>
+						<TokenItem token={token} />
+						{index < tokenList.length - 1 && <View style={styles.divider} />}
+					</React.Fragment>
 				))}
 			</View>
 
-			<View style={styles.actionButtons}>
+			<View style={styles.buttonContainer}>
 				<Button
-					title="+ Get free test SOL"
+					title="Get test SOL"
 					variant="secondary"
 					onPress={getTestSol}
+					icon={<SolanaIcon />}
 				/>
-				<View style={styles.spacer} />
 				<Button
-					title="+ Get test USDC"
+					title="Get test USDC"
 					variant="secondary"
 					onPress={getTestUsdc}
+					icon={<USDCIcon />}
 				/>
-				<View style={styles.spacer} />
-				<Button
-					title="Browse"
-					variant="secondary"
-					onPress={handleOpenBrowser}
-				/>
-				<View style={styles.spacer} />
-				<Button title="Log out" variant="secondary" onPress={onLogout} />
 			</View>
 		</View>
 	);
@@ -174,38 +133,27 @@ export default function WalletInfo({ onLogout }: WalletInfoProps) {
 
 const styles = StyleSheet.create({
 	container: {
-		padding: 20,
+		flex: 1,
+		paddingHorizontal: 20,
 	},
-	walletHeader: {
-		marginBottom: 20,
+	balanceHeader: {
+		marginBottom: 16,
 	},
-	walletTitle: {
-		fontSize: 20,
-		fontWeight: "700",
-		marginBottom: 8,
+	sectionTitle: {
+		fontSize: 18,
+		marginBottom: 4,
 	},
-	addressContainer: {
-		flexDirection: "row",
-		alignItems: "center",
-	},
-	walletAddress: {
-		fontSize: 16,
+	sectionSubtitle: {
+		fontSize: 14,
 		color: "#666",
 	},
-	copyButton: {
-		marginLeft: 8,
-		padding: 4,
+	divider: {
+		height: 1,
+		backgroundColor: "#EEEEEF",
+		marginVertical: 8,
 	},
-	tokenContainer: {
-		backgroundColor: "#f9f9f9",
-		borderRadius: 8,
-		padding: 16,
-		marginBottom: 20,
-	},
-	actionButtons: {
-		marginTop: 20,
-	},
-	spacer: {
-		height: 12,
+	buttonContainer: {
+		gap: 12,
+		marginTop: 16,
 	},
 });

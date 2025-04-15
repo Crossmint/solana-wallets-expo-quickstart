@@ -1,4 +1,7 @@
-import { useWallet } from "@crossmint/client-sdk-react-native-ui";
+import {
+	type DelegatedSigner,
+	useWallet,
+} from "@crossmint/client-sdk-react-native-ui";
 import Button from "../components/Button";
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, StyleSheet, Linking } from "react-native";
@@ -7,7 +10,9 @@ export default function DelegateSigners() {
 	const { wallet, type } = useWallet();
 	const [isLoading, setIsLoading] = useState(false);
 	// TODO: delegatedSigners should be typed
-	const [delegatedSigners, setDelegatedSigners] = useState<any[]>([]);
+	const [delegatedSigners, setDelegatedSigners] = useState<DelegatedSigner[]>(
+		[],
+	);
 	const [newSigner, setNewSigner] = useState<string>("");
 
 	useEffect(() => {

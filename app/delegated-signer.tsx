@@ -12,6 +12,7 @@ import {
 	Alert,
 	TouchableOpacity,
 	ActivityIndicator,
+	ScrollView,
 } from "react-native";
 
 // We want to cache the balances so we don't have to fetch them every time we change tabs
@@ -63,7 +64,7 @@ export default function DelegateSigners() {
 	};
 
 	return (
-		<View style={styles.container}>
+		<ScrollView contentContainerStyle={styles.container}>
 			<Text style={styles.sectionTitle}>Add Delegated Signer</Text>
 			<Text style={styles.sectionSubtitle}>
 				Allow third parties to sign transactions on behalf of your wallet.{" "}
@@ -114,7 +115,7 @@ export default function DelegateSigners() {
 					</View>
 				</View>
 			)}
-		</View>
+		</ScrollView>
 	);
 }
 

@@ -12,6 +12,7 @@ import {
 	StyleSheet,
 	Alert,
 	ActivityIndicator,
+	Linking,
 } from "react-native";
 
 export default function Transfer() {
@@ -54,92 +55,88 @@ export default function Transfer() {
 			}
 		} catch (error) {
 			console.error("Transfer error:", error);
-			Alert.alert(`Transfer Failed: ${error}`);
+			Alert.alert("Transfer Failed", `${error}`);
 		} finally {
 			setIsPending(false);
 		}
 	}, [wallet, type, selectedToken, recipientAddress, amount]);
 
 	return (
-		<View style={styles.container}>
-			<Text style={styles.sectionTitle}>Transfer funds</Text>
-			<Text style={styles.sectionSubtitle}>Send funds to another wallet</Text>
+    <View style={styles.container}>
+      <Text style={styles.sectionTitle}>Transfer funds</Text>
+      <Text style={styles.sectionSubtitle}>Send funds to another wallet</Text>
+      <View style={styles.formSection}>
+        <Text style={styles.formLabel}>Token</Text>
+        <View style={styles.tokenSelector}>
+          <TouchableOpacity
+            style={styles.tokenOption}
+            onPress={() => setSelectedToken("USDC")}
+          >
+            <View style={styles.radioButton}>
+              {selectedToken === "USDC" && (
+                <View style={styles.radioButtonInner} />
+              )}
+            </View>
+            <Text>USDC</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.tokenOption}
+            onPress={() => setSelectedToken("SOL")}
+          >
+            <View style={styles.radioButton}>
+              {selectedToken === "SOL" && (
+                <View style={styles.radioButtonInner} />
+              )}
+            </View>
+            <Text>SOL</Text>
+          </TouchableOpacity>
+        </View>
 
-			{txHash && (
-				<View style={styles.successMessage}>
-					<Text style={styles.successText}>Transfer successful!</Text>
-					<Text style={styles.signatureText}>
-						Signature: {txHash.slice(0, 8)}...
-						{txHash.slice(-8)}
-					</Text>
-					<TouchableOpacity onPress={() => setTxHash(null)}>
-						<Text style={styles.dismissText}>Dismiss</Text>
-					</TouchableOpacity>
-				</View>
-			)}
+        <Text style={styles.formLabel}>Amount</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="0.00"
+          value={amount}
+          onChangeText={setAmount}
+          keyboardType="decimal-pad"
+        />
 
-			<View style={styles.formSection}>
-				<Text style={styles.formLabel}>Token</Text>
-				<View style={styles.tokenSelector}>
-					<TouchableOpacity
-						style={styles.tokenOption}
-						onPress={() => setSelectedToken("USDC")}
-					>
-						<View style={styles.radioButton}>
-							{selectedToken === "USDC" && (
-								<View style={styles.radioButtonInner} />
-							)}
-						</View>
-						<Text>USDC</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						style={styles.tokenOption}
-						onPress={() => setSelectedToken("SOL")}
-					>
-						<View style={styles.radioButton}>
-							{selectedToken === "SOL" && (
-								<View style={styles.radioButtonInner} />
-							)}
-						</View>
-						<Text>SOL</Text>
-					</TouchableOpacity>
-				</View>
+        <Text style={styles.formLabel}>Recipient wallet</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter wallet address"
+          value={recipientAddress}
+          onChangeText={setRecipientAddress}
+        />
 
-				<Text style={styles.formLabel}>Amount</Text>
-				<TextInput
-					style={styles.input}
-					placeholder="0.00"
-					value={amount}
-					onChangeText={setAmount}
-					keyboardType="decimal-pad"
-				/>
-
-				<Text style={styles.formLabel}>Recipient wallet</Text>
-				<TextInput
-					style={styles.input}
-					placeholder="Enter wallet address"
-					value={recipientAddress}
-					onChangeText={setRecipientAddress}
-				/>
-
-				<TouchableOpacity
-					style={[
-						styles.button,
-						(!amount || !recipientAddress || isPending) &&
-							styles.buttonDisabled,
-					]}
-					onPress={transferTokens}
-					disabled={!amount || !recipientAddress || isPending}
-				>
-					{isPending ? (
-						<ActivityIndicator color="#fff" size="small" />
-					) : (
-						<Text style={styles.buttonText}>Transfer</Text>
-					)}
-				</TouchableOpacity>
-			</View>
-		</View>
-	);
+        <TouchableOpacity
+          style={[
+            styles.button,
+            (!amount || !recipientAddress || isPending) &&
+              styles.buttonDisabled,
+          ]}
+          onPress={transferTokens}
+          disabled={!amount || !recipientAddress || isPending}
+        >
+          {isPending ? (
+            <ActivityIndicator color="#fff" size="small" />
+          ) : (
+            <Text style={styles.buttonText}>Transfer</Text>
+          )}
+        </TouchableOpacity>
+        {txHash && !isPending && (
+          <TouchableOpacity
+            onPress={() => Linking.openURL(`https://solscan.io/tx/${txHash}?`)}
+            style={{ marginTop: 10 }}
+          >
+            <Text style={styles.solscanLink}>
+              → View on Solscan
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -243,5 +240,10 @@ const styles = StyleSheet.create({
 	},
 	buttonTextSecondary: {
 		color: "#000",
+	},
+	solscanLink: {
+		fontSize: 12,
+		color: "#666",
+		textAlign: "center",
 	},
 });

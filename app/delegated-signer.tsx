@@ -37,7 +37,7 @@ export default function DelegateSigners() {
 			throw new Error("No wallet connected");
 		}
 		if (!newSigner) {
-			Alert.alert("Error adding delegated signer: no signer provided!");
+			Alert.alert("Error adding delegated signer", "No signer provided, please enter a valid signer");
 			return;
 		}
 		try {
@@ -47,8 +47,9 @@ export default function DelegateSigners() {
 			setDelegatedSigners(signers);
 		} catch (err) {
 			console.error("Delegated Signer: ", err);
-			Alert.alert(`Error adding delegated signer: ${err}`);
+			Alert.alert("Error adding delegated signer", `${err}`);
 		} finally {
+			setNewSigner("");
 			setIsLoading(false);
 		}
 	};

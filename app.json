@@ -1,47 +1,50 @@
 {
-	"expo": {
-		"name": "Solana Wallets",
-		"slug": "solana-wallets-expo-quickstart",
-		"version": "1.0.0",
-		"orientation": "portrait",
-		"icon": "./assets/images/icon.png",
-		"scheme": "solana-wallets-expo-quickstart",
-		"userInterfaceStyle": "automatic",
-		"newArchEnabled": true,
-		"ios": {
-			"bundleIdentifier": "com.crossmint.solana.wallets",
-			"supportsTablet": true
-		},
-		"android": {
-			"package": "com.crossmint.solana.wallets"
-		},
-		"web": {
-			"bundler": "metro",
-			"output": "static",
-			"favicon": "./assets/images/favicon.png"
-		},
-		"plugins": [
-			[
-				"expo-splash-screen",
-				{
-					"image": "./assets/images/icon.png",
-					"resizeMode": "contain",
-					"backgroundColor": "#0e171b",
-					"imageWidth": 100
-				}
-			]
-		],
-		"experiments": {
-			"typedRoutes": true
-		},
-		"extra": {
-			"router": {
-				"origin": false
-			},
-			"eas": {
-				"projectId": "6e5f5e4e-dbdf-41f7-931e-beae6931593f"
-			}
-		},
-		"owner": "crossmint"
-	}
+  "expo": {
+    "name": "Solana Wallets",
+    "slug": "solana-wallets-expo-quickstart",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "solana-wallets-expo-quickstart",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "bundleIdentifier": "com.crossmint.solana.wallets",
+      "supportsTablet": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.crossmint.solana.wallets"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#0e171b",
+          "imageWidth": 100
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "533d7640-09c5-4e8d-a0d3-ffe3be551dab"
+      }
+    },
+    "owner": "crossmint"
+  }
 }

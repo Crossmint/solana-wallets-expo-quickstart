@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
-  ScrollView,
   View,
   Text,
   TouchableOpacity,
@@ -77,11 +76,11 @@ export default function Index() {
             onTabPress={(tab) => setActiveTab(tab as TabKey)}
           />
 
-          <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.scrollContent}>
             {activeTab === "wallet" && <Balance />}
             {activeTab === "transfer" && <Transfer />}
             {activeTab === "signers" && <DelegatedSigners />}
-          </ScrollView>
+          </View>
         </View>
       </View>
     </SafeAreaView>

@@ -13,6 +13,7 @@ import {
   Alert,
   ActivityIndicator,
   Linking,
+  ScrollView,
 } from "react-native";
 
 export default function Transfer() {
@@ -62,7 +63,7 @@ export default function Transfer() {
   }, [wallet, type, selectedToken, recipientAddress, amount]);
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.sectionTitle}>Transfer funds</Text>
       <Text style={styles.sectionSubtitle}>Send funds to another wallet</Text>
 
@@ -140,7 +141,7 @@ export default function Transfer() {
           )}
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,8 @@ import {
   Alert,
   Image,
   TouchableOpacity,
+  ScrollView,
+  RefreshControl,
 } from "react-native";
 import {
   useWallet,
@@ -20,24 +22,32 @@ const formatBalance = (balance: string, decimals: number) => {
 export default function Balance() {
   const { wallet, type } = useWallet();
   const [balances, setBalances] = useState<WalletBalance>([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchBalances = useCallback(async () => {
+    if (wallet == null || type !== "solana-smart-wallet") {
+      return;
+    }
+    try {
+      const balances = await wallet.getBalances({
+        tokens: ["sol", "usdc"],
+      });
+      setBalances(balances);
+    } catch (error) {
+      console.error("Error fetching wallet balances:", error);
+      Alert.alert("Error fetching wallet balances", `${error}`);
+    }
+  }, [wallet, type]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchBalances();
+    setRefreshing(false);
+  }, [fetchBalances]);
 
   useEffect(() => {
-    const fetchBalances = async () => {
-      if (wallet == null || type !== "solana-smart-wallet") {
-        return;
-      }
-      try {
-        const balances = await wallet.getBalances({
-          tokens: ["sol", "usdc"],
-        });
-        setBalances(balances);
-      } catch (error) {
-        console.error("Error fetching wallet balances:", error);
-        Alert.alert("Error fetching wallet balances", `${error}`);
-      }
-    };
     fetchBalances();
-  }, [wallet, type]);
+  }, [fetchBalances]);
 
   const solBalance =
     balances?.find((t) => t.token === "sol")?.balances.total || "0";
@@ -53,7 +63,16 @@ export default function Balance() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      contentContainerStyle={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor="#05b959"
+        />
+      }
+    >
       <View style={styles.balanceHeader}>
         <Text style={styles.sectionTitle}>Wallet balance</Text>
         <Text style={styles.sectionSubtitle}>Check the wallet balance</Text>
@@ -123,7 +142,7 @@ export default function Balance() {
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 

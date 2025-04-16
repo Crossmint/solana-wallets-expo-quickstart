@@ -12,6 +12,7 @@ import {
   Alert,
   TouchableOpacity,
   ActivityIndicator,
+  ScrollView,
 } from "react-native";
 
 export default function DelegateSigners() {
@@ -59,7 +60,7 @@ export default function DelegateSigners() {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.sectionTitle}>Add Delegated Signer</Text>
       <Text style={styles.sectionSubtitle}>
         Allow third parties to sign transactions on behalf of your wallet.{" "}
@@ -110,7 +111,7 @@ export default function DelegateSigners() {
           </View>
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 }
 

@@ -15,7 +15,7 @@ import {
   ScrollView,
 } from "react-native";
 
-// We want to cache the balances so we don't have to fetch them every time we change tabs
+// We want to cache the signers so we don't have to fetch them every time we change tabs
 let delegatedSignersCache: DelegatedSigner[] | null = null;
 
 export default function DelegateSigners() {

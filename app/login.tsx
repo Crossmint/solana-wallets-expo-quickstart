@@ -6,6 +6,7 @@ import {
   TextInput,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { useCrossmintAuth } from "@crossmint/client-sdk-react-native-ui";
 import { router } from "expo-router";
@@ -17,6 +18,7 @@ export default function Login() {
   const [emailId, setEmailId] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
+  const [isPending, setIsPending] = useState(false);
 
   useEffect(() => {
     if (user != null) {
@@ -24,19 +26,23 @@ export default function Login() {
     }
   }, [user]);
 
-  const handleSendOtp = async () => {
+  const sendOtp = async () => {
+    setIsPending(true);
     const res = await crossmintAuth?.sendEmailOtp(email);
     setEmailId(res.emailId);
     setOtpSent(true);
+    setIsPending(false);
   };
 
-  const handleVerifyOtp = async () => {
+  const verifyOtp = async () => {
+    setIsPending(true);
     const oneTimeSecret = await crossmintAuth?.confirmEmailOtp(
       email,
       emailId,
       otp,
     );
     await createAuthSession(oneTimeSecret);
+    setIsPending(false);
   };
 
   return (
@@ -63,8 +69,16 @@ export default function Login() {
       />
 
       {!otpSent ? (
-        <TouchableOpacity style={styles.button} onPress={handleSendOtp}>
-          <Text style={styles.buttonText}>Sign in</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={sendOtp}
+          disabled={isPending}
+        >
+          {isPending ? (
+            <ActivityIndicator color="#fff" size="small" />
+          ) : (
+            <Text style={styles.buttonText}>Sign in</Text>
+          )}
         </TouchableOpacity>
       ) : (
         <>
@@ -79,12 +93,21 @@ export default function Login() {
             onChangeText={setOtp}
           />
           <View style={styles.otpButtonsContainer}>
-            <TouchableOpacity style={styles.button} onPress={handleVerifyOtp}>
-              <Text style={styles.buttonText}>Verify OTP</Text>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={verifyOtp}
+              disabled={isPending}
+            >
+              {isPending ? (
+                <ActivityIndicator color="#fff" size="small" />
+              ) : (
+                <Text style={styles.buttonText}>Verify OTP</Text>
+              )}
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.button, styles.buttonSecondary]}
               onPress={() => setOtpSent(false)}
+              disabled={isPending}
             >
               <Text style={[styles.buttonText, styles.buttonTextSecondary]}>
                 Back
@@ -200,7 +223,7 @@ const styles = StyleSheet.create({
   },
   otpButtonsContainer: {
     width: "100%",
-    flexDirection: "row",
+    flexDirection: "column",
     justifyContent: "space-between",
     gap: 8,
   },

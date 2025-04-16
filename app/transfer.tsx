@@ -3,7 +3,7 @@ import {
   createTokenTransferTransaction,
   createNativeTransferTransaction,
 } from "../lib/createTransaction";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import {
   View,
   Text,
@@ -13,8 +13,8 @@ import {
   Alert,
   ActivityIndicator,
   Linking,
-  ScrollView,
 } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function Transfer() {
   const { wallet, type } = useWallet();
@@ -23,6 +23,7 @@ export default function Transfer() {
   const [selectedToken, setSelectedToken] = useState<"SOL" | "USDC">("SOL");
   const [txHash, setTxHash] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const scrollViewRef = useRef<KeyboardAwareScrollView>(null);
 
   const transferTokens = useCallback(async () => {
     if (wallet == null || type !== "solana-smart-wallet") {
@@ -63,7 +64,13 @@ export default function Transfer() {
   }, [wallet, type, selectedToken, recipientAddress, amount]);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <KeyboardAwareScrollView
+      ref={scrollViewRef}
+      contentContainerStyle={styles.scrollContainer}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+      extraScrollHeight={20}
+    >
       <Text style={styles.sectionTitle}>Transfer funds</Text>
       <Text style={styles.sectionSubtitle}>Send funds to another wallet</Text>
 
@@ -141,13 +148,16 @@ export default function Transfer() {
           )}
         </TouchableOpacity>
       </View>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
     paddingHorizontal: 20,
   },
   sectionTitle: {

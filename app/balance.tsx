@@ -1,39 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import TokenItem from "../components/TokenItem";
-import Button from "../components/Button";
-import type { Token, TokenDefinition, TokenSymbol } from "../types/wallet";
+import {
+	View,
+	Text,
+	StyleSheet,
+	Alert,
+	Image,
+	TouchableOpacity,
+} from "react-native";
 import {
 	useWallet,
-	WalletBalance,
+	type WalletBalance,
 } from "@crossmint/client-sdk-react-native-ui";
-import SolanaIcon from "../components/icons/SolanaIcon";
-import USDCIcon from "../components/icons/USDCIcon";
 import { Linking } from "react-native";
 
 const formatBalance = (balance: string, decimals: number) => {
 	return (Number(balance) / 10 ** decimals).toFixed(2);
 };
 
-const tokenDefinitions: Record<TokenSymbol, TokenDefinition> = {
-	SOL: {
-		symbol: "SOL",
-		name: "Solana",
-	},
-	USDC: {
-		symbol: "USDC",
-		name: "USDC",
-	},
-};
-
-const initialTokens: Token[] = [
-	{ ...tokenDefinitions.SOL, balance: "0" },
-	{ ...tokenDefinitions.USDC, balance: "0" },
-];
-
 export default function Balance() {
-	const { wallet, getOrCreateWallet } = useWallet();
-	const [tokenList, setTokenList] = useState<Token[]>(initialTokens);
+	const { wallet, type, getOrCreateWallet } = useWallet();
+	const [balances, setBalances] = useState<WalletBalance>([]);
 
 	useEffect(() => {
 		if (wallet == null) {
@@ -46,50 +32,24 @@ export default function Balance() {
 
 	useEffect(() => {
 		const fetchBalances = async () => {
-			if (wallet == null) {
+			if (wallet == null || type !== "solana-smart-wallet") {
 				return;
 			}
 			try {
-				const balances = await wallet.getBalances(["sol", "usdc"] as never[]);
-				if (!Array.isArray(balances)) {
-					return;
-				}
-
-				const solBalance = formatBalance(
-					balances.find((t) => t.token === "sol")?.balances.total || "0",
-					9,
-				);
-				const usdcBalance = formatBalance(
-					balances.find((t) => t.token === "usdc")?.balances.total || "0",
-					6,
-				);
-
-				setTokenList([
-					{ ...tokenDefinitions.SOL, balance: solBalance },
-					{ ...tokenDefinitions.USDC, balance: usdcBalance },
-				]);
+				const balances = await wallet.getBalances(["sol", "usdc"]);
+				setBalances(balances);
 			} catch (error) {
 				console.error("Error fetching wallet balances:", error);
+				Alert.alert(`Error fetching wallet balances: ${error}`);
 			}
 		};
 		fetchBalances();
-	}, [wallet]);
+	}, [wallet, type]);
 
-	const getTestSol = async () => {
-		try {
-			await Linking.openURL("https://faucet.solana.com");
-		} catch (error) {
-			console.error("Error opening Solana faucet:", error);
-		}
-	};
-
-	const getTestUsdc = async () => {
-		try {
-			await Linking.openURL("https://faucet.circle.com");
-		} catch (error) {
-			console.error("Error opening Circle faucet:", error);
-		}
-	};
+	const solBalance =
+		balances?.find((t) => t.token === "sol")?.balances.total || "0";
+	const usdcBalance =
+		balances?.find((t) => t.token === "usdc")?.balances.total || "0";
 
 	if (wallet == null) {
 		return (
@@ -107,27 +67,68 @@ export default function Balance() {
 			</View>
 
 			<View>
-				{tokenList.map((token, index) => (
-					<React.Fragment key={token.symbol}>
-						<TokenItem token={token} />
-						{index < tokenList.length - 1 && <View style={styles.divider} />}
-					</React.Fragment>
-				))}
+				<View style={styles.tokenContainer}>
+					<View style={styles.tokenInfo}>
+						<View style={styles.iconContainer}>
+							<Image
+								source={require("../assets/images/solana.png")}
+								style={styles.tokenIcon}
+							/>
+						</View>
+						<Text style={styles.tokenSymbol}>SOL</Text>
+					</View>
+					<Text style={styles.tokenBalance}>
+						{formatBalance(solBalance, 9)} SOL
+					</Text>
+				</View>
+
+				<View style={styles.divider} />
+
+				<View style={styles.tokenContainer}>
+					<View style={styles.tokenInfo}>
+						<View style={styles.iconContainer}>
+							<Image
+								source={require("../assets/images/usdc.png")}
+								style={styles.tokenIcon}
+							/>
+						</View>
+						<Text style={styles.tokenSymbol}>USDC</Text>
+					</View>
+					<Text style={styles.tokenBalance}>
+						${formatBalance(usdcBalance, 6)}
+					</Text>
+				</View>
 			</View>
 
 			<View style={styles.buttonContainer}>
-				<Button
-					title="Get test SOL"
-					variant="secondary"
-					onPress={getTestSol}
-					icon={<SolanaIcon />}
-				/>
-				<Button
-					title="Get test USDC"
-					variant="secondary"
-					onPress={getTestUsdc}
-					icon={<USDCIcon />}
-				/>
+				<TouchableOpacity
+					style={[styles.button, styles.buttonSecondary]}
+					onPress={() => Linking.openURL("https://faucet.solana.com")}
+				>
+					<View style={styles.buttonIconContainer}>
+						<Image
+							source={require("../assets/images/solana.png")}
+							style={styles.buttonIcon}
+						/>
+					</View>
+					<Text style={[styles.buttonText, styles.buttonTextSecondary]}>
+						Get test SOL
+					</Text>
+				</TouchableOpacity>
+				<TouchableOpacity
+					style={[styles.button, styles.buttonSecondary]}
+					onPress={() => Linking.openURL("https://faucet.circle.com")}
+				>
+					<View style={styles.buttonIconContainer}>
+						<Image
+							source={require("../assets/images/usdc.png")}
+							style={styles.buttonIcon}
+						/>
+					</View>
+					<Text style={[styles.buttonText, styles.buttonTextSecondary]}>
+						Get test USDC
+					</Text>
+				</TouchableOpacity>
 			</View>
 		</View>
 	);
@@ -157,5 +158,66 @@ const styles = StyleSheet.create({
 	buttonContainer: {
 		gap: 12,
 		marginTop: 16,
+	},
+	tokenContainer: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-between",
+		paddingVertical: 16,
+	},
+	tokenInfo: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 12,
+	},
+	iconContainer: {
+		width: 40,
+		height: 40,
+		borderRadius: 20,
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	tokenSymbol: {
+		fontSize: 16,
+		color: "#000",
+	},
+	tokenBalance: {
+		fontSize: 16,
+		color: "#000",
+	},
+	tokenIcon: {
+		width: 28,
+		height: 28,
+		resizeMode: "contain",
+	},
+	button: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		paddingVertical: 14,
+		backgroundColor: "#05b959",
+		borderRadius: 8,
+		width: "100%",
+	},
+	buttonSecondary: {
+		backgroundColor: "#fff",
+		borderWidth: 1,
+		borderColor: "#E8E8E9",
+	},
+	buttonText: {
+		fontSize: 14,
+		fontWeight: "500",
+		color: "#fff",
+	},
+	buttonTextSecondary: {
+		color: "#000",
+	},
+	buttonIconContainer: {
+		marginRight: 8,
+	},
+	buttonIcon: {
+		width: 20,
+		height: 20,
+		resizeMode: "contain",
 	},
 });

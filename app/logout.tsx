@@ -1,23 +1,26 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
 import { useCrossmintAuth } from "@crossmint/client-sdk-react-native-ui";
-import Button from "../components/Button";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Logout() {
 	const { logout } = useCrossmintAuth();
-
 	return (
-		<View style={styles.container}>
-			<Button title="Log Out" onPress={logout} variant="secondary" />
-		</View>
+		<TouchableOpacity style={styles.logoutButton} onPress={logout}>
+			<Text style={styles.logoutText}>Logout</Text>
+			<Ionicons name="log-out-outline" size={16} color="#666" />
+		</TouchableOpacity>
 	);
 }
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: "center",
+	logoutButton: {
+		flexDirection: "row",
 		alignItems: "center",
-		padding: 20,
+		gap: 4,
+	},
+	logoutText: {
+		fontSize: 14,
+		color: "#666",
 	},
 });

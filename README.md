@@ -81,3 +81,11 @@ Check out [polyfills.ts](lib/polyfills.ts) and [metro.config.js](metro.config.js
 1. Create a [production API key](https://docs.crossmint.com/introduction/platform/api-keys/client-side).
 2. Update the `NEXT_PUBLIC_RPC_URL` to a mainnet RPC URL, you can use the public RPC URL `https://api.mainnet-beta.solana.com`.
 3. Update the `NEXT_PUBLIC_USDC_TOKEN_MINT` to the mainnet USDC token mint address `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`.
+
+## Errors when running in iOS simulator
+
+If you encounter errors trying to run the expo app on iOS, try running:
+
+```bash
+npx expo install --fix
+```

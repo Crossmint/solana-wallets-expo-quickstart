@@ -1,12 +1,9 @@
-import Button from "../components/Button";
 import { useWallet } from "@crossmint/client-sdk-react-native-ui";
-import type { TokenSymbol } from "../types/wallet";
 import {
 	createTokenTransferTransaction,
 	createNativeTransferTransaction,
 } from "../lib/createTransaction";
-import { useMutation } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
 	View,
 	Text,
@@ -14,20 +11,24 @@ import {
 	TouchableOpacity,
 	StyleSheet,
 	Alert,
+	ActivityIndicator,
 } from "react-native";
 
 export default function Transfer() {
 	const { wallet, type } = useWallet();
 	const [amount, setAmount] = useState("");
 	const [recipientAddress, setRecipientAddress] = useState("");
-	const [selectedToken, setSelectedToken] = useState<TokenSymbol>("SOL");
+	const [selectedToken, setSelectedToken] = useState<"SOL" | "USDC">("SOL");
 	const [successSignature, setSuccessSignature] = useState<string | null>(null);
+	const [isPending, setIsPending] = useState(false);
 
-	const { mutate: handleTransfer, isPending } = useMutation({
-		mutationFn: async () => {
-			if (wallet == null || type !== "solana-smart-wallet") {
-				return;
-			}
+	const handleTransfer = useCallback(async () => {
+		if (wallet == null || type !== "solana-smart-wallet") {
+			return;
+		}
+
+		try {
+			setIsPending(true);
 			const transaction =
 				selectedToken === "SOL"
 					? await createNativeTransferTransaction(
@@ -43,37 +44,21 @@ export default function Transfer() {
 							Number(amount),
 						);
 
-			console.log("Transaction created");
-			console.log({ transaction });
-
-			console.log("Sending transaction");
 			const hash = await wallet.sendTransaction({
 				transaction,
 			});
-
-			console.log("Transaction sent");
-			console.log({ hash });
-
-			return hash;
-		},
-		mutationKey: ["transfer", wallet?.address, recipientAddress, amount],
-		onSuccess: (signature) => {
-			console.log("Transfer success");
-			console.log({ signature });
-			if (signature) {
-				setSuccessSignature(signature);
+			if (hash) {
+				setSuccessSignature(hash);
 				setAmount("");
 				setRecipientAddress("");
 			}
-		},
-		onError: (error) => {
+		} catch (error) {
 			console.error("Transfer error:", error);
-			Alert.alert(
-				"Transfer Failed",
-				"There was an error processing your transfer. Please try again.",
-			);
-		},
-	});
+			Alert.alert(`Transfer Failed: ${error}`);
+		} finally {
+			setIsPending(false);
+		}
+	}, [wallet, type, selectedToken, recipientAddress, amount]);
 
 	return (
 		<View style={styles.container}>
@@ -137,12 +122,21 @@ export default function Transfer() {
 					onChangeText={setRecipientAddress}
 				/>
 
-				<Button
-					title="Transfer"
-					onPress={() => handleTransfer()}
+				<TouchableOpacity
+					style={[
+						styles.button,
+						(!amount || !recipientAddress || isPending) &&
+							styles.buttonDisabled,
+					]}
+					onPress={handleTransfer}
 					disabled={!amount || !recipientAddress || isPending}
-					loading={isPending}
-				/>
+				>
+					{isPending ? (
+						<ActivityIndicator color="#fff" size="small" />
+					) : (
+						<Text style={styles.buttonText}>Transfer</Text>
+					)}
+				</TouchableOpacity>
 			</View>
 		</View>
 	);
@@ -224,5 +218,30 @@ const styles = StyleSheet.create({
 		color: "#008000",
 		fontSize: 14,
 		textDecorationLine: "underline",
+	},
+	button: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		paddingVertical: 14,
+		backgroundColor: "#05b959",
+		borderRadius: 8,
+		width: "100%",
+	},
+	buttonSecondary: {
+		backgroundColor: "#fff",
+		borderWidth: 1,
+		borderColor: "#E8E8E9",
+	},
+	buttonDisabled: {
+		opacity: 0.6,
+	},
+	buttonText: {
+		fontSize: 14,
+		fontWeight: "500",
+		color: "#fff",
+	},
+	buttonTextSecondary: {
+		color: "#000",
 	},
 });

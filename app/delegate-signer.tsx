@@ -2,9 +2,17 @@ import {
 	type DelegatedSigner,
 	useWallet,
 } from "@crossmint/client-sdk-react-native-ui";
-import Button from "../components/Button";
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, StyleSheet, Linking } from "react-native";
+import {
+	View,
+	Text,
+	TextInput,
+	StyleSheet,
+	Linking,
+	Alert,
+	TouchableOpacity,
+	ActivityIndicator,
+} from "react-native";
 
 export default function DelegateSigners() {
 	const { wallet, type } = useWallet();
@@ -30,7 +38,7 @@ export default function DelegateSigners() {
 			throw new Error("No wallet connected");
 		}
 		if (!newSigner) {
-			alert("Delegated Signer: no signer provided!");
+			Alert.alert("Error adding delegated signer: no signer provided!");
 			return;
 		}
 		try {
@@ -40,7 +48,7 @@ export default function DelegateSigners() {
 			setDelegatedSigners(signers);
 		} catch (err) {
 			console.error("Delegated Signer: ", err);
-			alert(`Delegated Signer: ${err}`);
+			Alert.alert(`Error adding delegated signer: ${err}`);
 		} finally {
 			setIsLoading(false);
 		}
@@ -71,11 +79,19 @@ export default function DelegateSigners() {
 				onChangeText={setNewSigner}
 			/>
 
-			<Button
-				title={isLoading ? "Processing..." : "Add"}
+			<TouchableOpacity
+				style={[styles.button, isLoading && styles.buttonDisabled]}
 				onPress={addNewSigner}
 				disabled={isLoading}
-			/>
+			>
+				{isLoading ? (
+					<ActivityIndicator color="#fff" size="small" />
+				) : (
+					<Text style={styles.buttonText}>
+						{isLoading ? "Processing..." : "Add"}
+					</Text>
+				)}
+			</TouchableOpacity>
 
 			{/* List of delegated signers */}
 			{delegatedSigners.length > 0 && (
@@ -154,5 +170,22 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 8,
 		paddingVertical: 4,
 		borderRadius: 4,
+	},
+	button: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		paddingVertical: 14,
+		backgroundColor: "#05b959",
+		borderRadius: 8,
+		width: "100%",
+	},
+	buttonDisabled: {
+		opacity: 0.6,
+	},
+	buttonText: {
+		fontSize: 14,
+		fontWeight: "500",
+		color: "#fff",
 	},
 });

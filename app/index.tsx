@@ -42,7 +42,7 @@ export default function Index() {
 		}
 	}, [wallet, getOrCreateWallet, user]);
 
-	if (status === "initializing" || status === "in-progress") {
+	if (status === "initializing") {
 		return (
 			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
 				<ActivityIndicator size="large" />
@@ -50,7 +50,7 @@ export default function Index() {
 		);
 	}
 
-	if (status !== "logged-in" || user == null) {
+	if (status === "logged-out") {
 		return <Redirect href="/login" />;
 	}
 

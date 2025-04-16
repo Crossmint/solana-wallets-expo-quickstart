@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import {
 	View,
 	Text,
 	StyleSheet,
-	Alert,
 	Image,
 	TouchableOpacity,
+	Alert,
+	ScrollView,
+	RefreshControl,
 } from "react-native";
 import {
 	useWallet,
@@ -17,25 +19,31 @@ const formatBalance = (balance: string, decimals: number) => {
 	return (Number(balance) / 10 ** decimals).toFixed(2);
 };
 
+// We want to cache the balances so we don't see a flash of 0s when we change tabs
+let balancesCache: WalletBalance | null = null;
+
 export default function Balance() {
 	const { wallet, type } = useWallet();
-	const [balances, setBalances] = useState<WalletBalance>([]);
+	const [balances, setBalances] = useState<WalletBalance>(balancesCache || []);
 
 	useEffect(() => {
 		const fetchBalances = async () => {
 			if (wallet == null || type !== "solana-smart-wallet") {
 				return;
 			}
+
 			try {
-				const balances = await wallet.getBalances({
+				const newBalances = await wallet.getBalances({
 					tokens: ["sol", "usdc"],
 				});
-				setBalances(balances);
+				setBalances(newBalances);
+				balancesCache = newBalances;
 			} catch (error) {
 				console.error("Error fetching wallet balances:", error);
 				Alert.alert("Error fetching wallet balances", `${error}`);
 			}
 		};
+
 		fetchBalances();
 	}, [wallet, type]);
 
@@ -45,11 +53,7 @@ export default function Balance() {
 		balances?.find((t) => t.token === "usdc")?.balances.total || "0";
 
 	if (wallet == null) {
-		return (
-			<View style={styles.container}>
-				<Text>Loading wallet information...</Text>
-			</View>
-		);
+		return null;
 	}
 
 	return (

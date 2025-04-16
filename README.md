@@ -15,7 +15,7 @@
 
 ## Introduction
 
-Create and interact with Crossmint wallets in Solana. This quickstart uses Crossmint Auth to login and create a smart wallet.
+Create and interact with Crossmint wallets in Solana using Crossmint Auth to handle user authentication.
 
 **Learn how to:**
 

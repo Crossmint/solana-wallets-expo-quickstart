@@ -29,7 +29,7 @@ Create and interact with Crossmint wallets in Solana using Crossmint Auth to han
 1. Clone the repository and navigate to the project folder:
 
 ```bash
-git clone https://github.com/crossmint/expo-solana-smart-wallet-quickstart.git && cd expo-solana-smart-wallet-quickstart
+git clone https://github.com/crossmint/solana-wallets-expo-quickstart.git && cd solana-wallets-expo-quickstart
 ```
 
 2. Install all dependencies:

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { useWallet } from "@crossmint/client-sdk-react-native-ui";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
@@ -7,9 +7,10 @@ import * as Clipboard from "expo-clipboard";
 export default function Wallet() {
 	const { wallet } = useWallet();
 
-	const handleCopyAddress = async () => {
+	const copyAddress = async () => {
 		if (wallet?.address) {
 			await Clipboard.setStringAsync(wallet.address);
+			Alert.alert("Address copied to clipboard");
 		}
 	};
 
@@ -26,7 +27,7 @@ export default function Wallet() {
 				<Text style={styles.walletAddress}>
 					{formatWalletAddress(wallet.address)}
 				</Text>
-				<TouchableOpacity onPress={handleCopyAddress}>
+				<TouchableOpacity onPress={copyAddress}>
 					<Ionicons
 						name="copy-outline"
 						size={16}

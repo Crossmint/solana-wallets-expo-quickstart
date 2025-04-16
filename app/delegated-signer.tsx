@@ -17,7 +17,6 @@ import {
 export default function DelegateSigners() {
 	const { wallet, type } = useWallet();
 	const [isLoading, setIsLoading] = useState(false);
-	// TODO: delegatedSigners should be typed
 	const [delegatedSigners, setDelegatedSigners] = useState<DelegatedSigner[]>(
 		[],
 	);
@@ -71,8 +70,6 @@ export default function DelegateSigners() {
 				</Text>
 				.
 			</Text>
-
-			<Text style={styles.formLabel}>Delegated Signer</Text>
 			<TextInput
 				style={styles.input}
 				placeholder="Ex: 5YNmS1R9nNSCDzb5a7mMJ1dwK9UHeA"
@@ -99,7 +96,7 @@ export default function DelegateSigners() {
 					<Text style={styles.signersTitle}>Registered signers</Text>
 					<View style={styles.signersListContainer}>
 						<View style={styles.signersList}>
-							{delegatedSigners.map((signer, index) => (
+							{delegatedSigners.map((signer) => (
 								<Text key={signer.locator} style={styles.signerItem}>
 									{signer.locator}
 								</Text>
@@ -128,11 +125,6 @@ const styles = StyleSheet.create({
 	learnMoreLink: {
 		color: "#007AFF",
 		textDecorationLine: "underline",
-	},
-	formLabel: {
-		fontSize: 14,
-		marginBottom: 8,
-		marginTop: 16,
 	},
 	input: {
 		borderWidth: 1,

@@ -19,10 +19,10 @@ export default function Transfer() {
 	const [amount, setAmount] = useState("");
 	const [recipientAddress, setRecipientAddress] = useState("");
 	const [selectedToken, setSelectedToken] = useState<"SOL" | "USDC">("SOL");
-	const [successSignature, setSuccessSignature] = useState<string | null>(null);
+	const [txHash, setTxHash] = useState<string | null>(null);
 	const [isPending, setIsPending] = useState(false);
 
-	const handleTransfer = useCallback(async () => {
+	const transferTokens = useCallback(async () => {
 		if (wallet == null || type !== "solana-smart-wallet") {
 			return;
 		}
@@ -48,7 +48,7 @@ export default function Transfer() {
 				transaction,
 			});
 			if (hash) {
-				setSuccessSignature(hash);
+				setTxHash(hash);
 				setAmount("");
 				setRecipientAddress("");
 			}
@@ -65,14 +65,14 @@ export default function Transfer() {
 			<Text style={styles.sectionTitle}>Transfer funds</Text>
 			<Text style={styles.sectionSubtitle}>Send funds to another wallet</Text>
 
-			{successSignature && (
+			{txHash && (
 				<View style={styles.successMessage}>
 					<Text style={styles.successText}>Transfer successful!</Text>
 					<Text style={styles.signatureText}>
-						Signature: {successSignature.slice(0, 8)}...
-						{successSignature.slice(-8)}
+						Signature: {txHash.slice(0, 8)}...
+						{txHash.slice(-8)}
 					</Text>
-					<TouchableOpacity onPress={() => setSuccessSignature(null)}>
+					<TouchableOpacity onPress={() => setTxHash(null)}>
 						<Text style={styles.dismissText}>Dismiss</Text>
 					</TouchableOpacity>
 				</View>
@@ -128,7 +128,7 @@ export default function Transfer() {
 						(!amount || !recipientAddress || isPending) &&
 							styles.buttonDisabled,
 					]}
-					onPress={handleTransfer}
+					onPress={transferTokens}
 					disabled={!amount || !recipientAddress || isPending}
 				>
 					{isPending ? (

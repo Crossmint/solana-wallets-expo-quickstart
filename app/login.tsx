@@ -117,7 +117,7 @@ export default function Login() {
 
 			<View style={styles.poweredByContainer}>
 				<Image
-					source={require("../assets/images/crossmint-leaf.png")}
+					source={require("../assets/images/secured-by-crossmint.png")}
 					style={styles.poweredByIcon}
 				/>
 			</View>
@@ -194,8 +194,8 @@ const styles = StyleSheet.create({
 		resizeMode: "contain",
 	},
 	poweredByIcon: {
-		width: 16,
-		height: 16,
+		width: 400,
+		height: 20,
 		resizeMode: "contain",
 	},
 	otpButtonsContainer: {

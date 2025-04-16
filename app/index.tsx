@@ -14,54 +14,9 @@ import { useCrossmintAuth } from "@crossmint/client-sdk-react-native-ui";
 import * as Linking from "expo-linking";
 import Balance from "./balance";
 import Transfer from "./transfer";
-import DelegatedSigners from "./delegate-signer";
+import DelegatedSigners from "./delegated-signer";
 import Logout from "./logout";
 import Wallet from "./wallet";
-
-type TabItem = {
-	key: string;
-	label: string;
-};
-
-const TABS: TabItem[] = [
-	{ key: "wallet", label: "Balance" },
-	{ key: "transfer", label: "Transfer" },
-	{ key: "delegated", label: "Delegated" },
-];
-
-type TabKey = "wallet" | "transfer" | "delegated";
-
-function TabNavigation({
-	tabs,
-	activeTab,
-	onTabPress,
-}: {
-	tabs: TabItem[];
-	activeTab: string;
-	onTabPress: (key: string) => void;
-}) {
-	return (
-		<View style={styles.tabContainer}>
-			{tabs.map((tab) => (
-				<TouchableOpacity
-					key={tab.key}
-					style={styles.tab}
-					onPress={() => onTabPress(tab.key)}
-				>
-					<Text
-						style={[
-							styles.tabText,
-							activeTab === tab.key && styles.activeTabText,
-						]}
-					>
-						{tab.label}
-					</Text>
-					{activeTab === tab.key && <View style={styles.activeIndicator} />}
-				</TouchableOpacity>
-			))}
-		</View>
-	);
-}
 
 export default function Index() {
 	const { createAuthSession, status, user } = useCrossmintAuth();
@@ -112,19 +67,57 @@ export default function Index() {
 					<ScrollView contentContainerStyle={styles.scrollContent}>
 						{activeTab === "wallet" && <Balance />}
 						{activeTab === "transfer" && <Transfer />}
-						{activeTab === "delegated" && <DelegatedSigners />}
+						{activeTab === "signers" && <DelegatedSigners />}
 					</ScrollView>
 				</View>
 			</View>
-
-			<View style={styles.footerContainer}>
-				<Image
-					source={require("../assets/images/crossmint-leaf.png")}
-					style={styles.leaf}
-				/>
-			</View>
 		</SafeAreaView>
 	);
+}
+
+type TabItem = {
+  key: string;
+  label: string;
+};
+
+const TABS: TabItem[] = [
+  { key: "wallet", label: "Balance" },
+  { key: "transfer", label: "Transfer" },
+  { key: "signers", label: "Signers" },
+];
+
+type TabKey = "wallet" | "transfer" | "signers";
+
+function TabNavigation({
+  tabs,
+  activeTab,
+  onTabPress,
+}: {
+  tabs: TabItem[];
+  activeTab: string;
+  onTabPress: (key: string) => void;
+}) {
+  return (
+    <View style={styles.tabContainer}>
+      {tabs.map((tab) => (
+        <TouchableOpacity
+          key={tab.key}
+          style={styles.tab}
+          onPress={() => onTabPress(tab.key)}
+        >
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === tab.key && styles.activeTabText,
+            ]}
+          >
+            {tab.label}
+          </Text>
+          {activeTab === tab.key && <View style={styles.activeIndicator} />}
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -133,7 +126,6 @@ const styles = StyleSheet.create({
 	},
 	mainContent: {
 		flex: 1,
-		paddingVertical: 16,
 	},
 	card: {
 		flex: 1,
@@ -141,6 +133,8 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderColor: "#e2e8f0",
 		borderRadius: 16,
+		borderBottomLeftRadius: 0,
+		borderBottomRightRadius: 0,
 		shadowColor: "#000000",
 		shadowOffset: { width: 0, height: 0.5 },
 		shadowOpacity: 0.2,
@@ -173,17 +167,6 @@ const styles = StyleSheet.create({
 		height: 36,
 		resizeMode: "contain",
 	},
-
-	footerContainer: {
-		alignItems: "center",
-		paddingVertical: 16,
-	},
-	leaf: {
-		width: 120,
-		height: 24,
-		resizeMode: "contain",
-	},
-
 	tabContainer: {
 		flexDirection: "row",
 		backgroundColor: "#FFF",

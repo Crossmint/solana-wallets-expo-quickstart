@@ -1,41 +1,64 @@
-import React, { useEffect, useState } from "react";
-
-import type { TabItem } from "../components/TabNavigation";
-import MainLayout from "../components/MainLayout";
-import Transfer from "./transfer";
-import DelegatedSigners from "./delegate-signer";
-import Balance from "./balance";
-
-import { useCrossmintAuth } from "@crossmint/client-sdk-react-native-ui";
-import { router } from "expo-router";
-
-const TABS: TabItem[] = [
-	{ key: "wallet", label: "Balance" },
-	{ key: "transfer", label: "Transfer" },
-	{ key: "delegated", label: "Delegated" },
-];
-
-type TabKey = "wallet" | "transfer" | "delegated";
+import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { useWallet } from "@crossmint/client-sdk-react-native-ui";
+import { Ionicons } from "@expo/vector-icons";
+import * as Clipboard from "expo-clipboard";
 
 export default function Wallet() {
-	const { user } = useCrossmintAuth();
-	const [activeTab, setActiveTab] = useState<TabKey>("wallet");
+	const { wallet } = useWallet();
 
-	useEffect(() => {
-		if (user == null) {
-			router.push("/login");
+	const handleCopyAddress = async () => {
+		if (wallet?.address) {
+			await Clipboard.setStringAsync(wallet.address);
 		}
-	}, [user]);
+	};
+
+	const formatWalletAddress = (address: string) => {
+		return `${address.slice(0, 4)}...${address.slice(-4)}`;
+	};
+
+	if (!wallet) return null;
 
 	return (
-		<MainLayout
-			tabs={TABS}
-			activeTab={activeTab}
-			onTabPress={(tab) => setActiveTab(tab as TabKey)}
-		>
-			{activeTab === "wallet" && <Balance />}
-			{activeTab === "transfer" && <Transfer />}
-			{activeTab === "delegated" && <DelegatedSigners />}
-		</MainLayout>
+		<View style={styles.walletInfo}>
+			<Text style={styles.walletTitle}>Your wallet</Text>
+			<View style={styles.walletAddressContainer}>
+				<Text style={styles.walletAddress}>
+					{formatWalletAddress(wallet.address)}
+				</Text>
+				<TouchableOpacity onPress={handleCopyAddress}>
+					<Ionicons
+						name="copy-outline"
+						size={16}
+						color="#666"
+						style={styles.copyIcon}
+					/>
+				</TouchableOpacity>
+			</View>
+		</View>
 	);
 }
+
+const styles = StyleSheet.create({
+	walletInfo: {
+		alignItems: "center",
+		marginBottom: 8,
+	},
+	walletTitle: {
+		fontSize: 14,
+		color: "#666",
+		marginBottom: 4,
+	},
+	walletAddressContainer: {
+		flexDirection: "row",
+		alignItems: "center",
+	},
+	walletAddress: {
+		fontSize: 20,
+		fontWeight: "600",
+		color: "#000",
+	},
+	copyIcon: {
+		marginLeft: 8,
+	},
+});

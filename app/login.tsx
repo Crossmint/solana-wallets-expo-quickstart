@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TextInput } from "react-native";
-import Button from "../components/Button";
+import {
+	View,
+	Text,
+	StyleSheet,
+	TextInput,
+	Image,
+	TouchableOpacity,
+} from "react-native";
 import { useCrossmintAuth } from "@crossmint/client-sdk-react-native-ui";
-import CrossmintLogo from "../components/icons/CrossmintLogo";
-import GoogleIcon from "../components/icons/GoogleIcon";
-import CrossmintLeaf from "@/components/icons/CrossmintLeaf";
 import { router } from "expo-router";
 
 export default function Login() {
@@ -17,7 +20,7 @@ export default function Login() {
 
 	useEffect(() => {
 		if (user != null) {
-			router.push("/wallet");
+			router.push("/");
 		}
 	}, [user]);
 
@@ -39,7 +42,10 @@ export default function Login() {
 	return (
 		<View style={styles.content}>
 			<View style={styles.logoContainer}>
-				<CrossmintLogo />
+				<Image
+					source={require("../assets/images/crossmint-logo.png")}
+					style={styles.logo}
+				/>
 			</View>
 			<Text style={styles.title}>Solana Wallets Quickstart</Text>
 			<Text style={styles.subtitle}>The easiest way to build onchain</Text>
@@ -57,7 +63,9 @@ export default function Login() {
 			/>
 
 			{!otpSent ? (
-				<Button title="Sign in" onPress={handleSendOtp} variant="primary" />
+				<TouchableOpacity style={styles.button} onPress={handleSendOtp}>
+					<Text style={styles.buttonText}>Sign in</Text>
+				</TouchableOpacity>
 			) : (
 				<>
 					<TextInput
@@ -71,16 +79,17 @@ export default function Login() {
 						onChangeText={setOtp}
 					/>
 					<View style={styles.otpButtonsContainer}>
-						<Button
-							title="Verify OTP"
-							onPress={handleVerifyOtp}
-							variant="primary"
-						/>
-						<Button
-							title="Back"
+						<TouchableOpacity style={styles.button} onPress={handleVerifyOtp}>
+							<Text style={styles.buttonText}>Verify OTP</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							style={[styles.button, styles.buttonSecondary]}
 							onPress={() => setOtpSent(false)}
-							variant="secondary"
-						/>
+						>
+							<Text style={[styles.buttonText, styles.buttonTextSecondary]}>
+								Back
+							</Text>
+						</TouchableOpacity>
 					</View>
 				</>
 			)}
@@ -91,15 +100,26 @@ export default function Login() {
 				<View style={styles.orLine} />
 			</View>
 
-			<Button
-				title="Sign in with Google"
+			<TouchableOpacity
+				style={[styles.button, styles.buttonSecondary]}
 				onPress={() => loginWithOAuth("google")}
-				variant="secondary"
-				icon={<GoogleIcon />}
-			/>
+			>
+				<View style={styles.buttonIconContainer}>
+					<Image
+						source={require("../assets/images/google.png")}
+						style={styles.googleIcon}
+					/>
+				</View>
+				<Text style={[styles.buttonText, styles.buttonTextSecondary]}>
+					Sign in with Google
+				</Text>
+			</TouchableOpacity>
 
 			<View style={styles.poweredByContainer}>
-				<CrossmintLeaf style={styles.poweredByIcon} />
+				<Image
+					source={require("../assets/images/crossmint-leaf.png")}
+					style={styles.poweredByIcon}
+				/>
 			</View>
 		</View>
 	);
@@ -117,6 +137,11 @@ const styles = StyleSheet.create({
 	},
 	logoContainer: {
 		marginBottom: 12,
+	},
+	logo: {
+		width: 180,
+		height: 40,
+		resizeMode: "contain",
 	},
 	title: {
 		fontSize: 28,
@@ -163,14 +188,45 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		marginTop: 24,
 	},
+	googleIcon: {
+		width: 20,
+		height: 20,
+		resizeMode: "contain",
+	},
 	poweredByIcon: {
 		width: 16,
 		height: 16,
+		resizeMode: "contain",
 	},
 	otpButtonsContainer: {
 		width: "100%",
 		flexDirection: "row",
 		justifyContent: "space-between",
 		gap: 8,
+	},
+	button: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		paddingVertical: 14,
+		backgroundColor: "#05b959",
+		borderRadius: 8,
+		width: "100%",
+	},
+	buttonSecondary: {
+		backgroundColor: "#fff",
+		borderWidth: 1,
+		borderColor: "#E8E8E9",
+	},
+	buttonText: {
+		fontSize: 14,
+		fontWeight: "500",
+		color: "#fff",
+	},
+	buttonTextSecondary: {
+		color: "#000",
+	},
+	buttonIconContainer: {
+		marginRight: 8,
 	},
 });

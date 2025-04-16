@@ -1,19 +1,19 @@
 {
 	"expo": {
 		"name": "Solana Wallets",
-		"slug": "crossmint-solana-expo-demo",
+		"slug": "solana-wallets-expo-quickstart",
 		"version": "1.0.0",
 		"orientation": "portrait",
 		"icon": "./assets/images/icon.png",
-		"scheme": "crossmint-solana-expo-demo",
+		"scheme": "solana-wallets-expo-quickstart",
 		"userInterfaceStyle": "automatic",
 		"newArchEnabled": true,
 		"ios": {
-			"bundleIdentifier": "com.crossmint.expo.solana.demo",
+			"bundleIdentifier": "com.crossmint.solana.wallets",
 			"supportsTablet": true
 		},
 		"android": {
-			"package": "com.crossmint.expo.solana.demo"
+			"package": "com.crossmint.solana.wallets"
 		},
 		"web": {
 			"bundler": "metro",

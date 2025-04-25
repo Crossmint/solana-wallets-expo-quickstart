@@ -3,9 +3,9 @@ import {
   View,
   Text,
   StyleSheet,
-  Alert,
   Image,
   TouchableOpacity,
+  Alert,
   ScrollView,
   RefreshControl,
 } from "react-native";
@@ -18,6 +18,9 @@ import { Linking } from "react-native";
 const formatBalance = (balance: string, decimals: number) => {
   return (Number(balance) / 10 ** decimals).toFixed(2);
 };
+
+// We want to cache the balances so we don't see a flash of 0s when we change tabs
+let balancesCache: WalletBalance | null = null;
 
 export default function Balance() {
   const { wallet, type } = useWallet();
@@ -33,6 +36,7 @@ export default function Balance() {
         tokens: ["sol", "usdc"],
       });
       setBalances(balances);
+      balancesCache = balances;
     } catch (error) {
       console.error("Error fetching wallet balances:", error);
       Alert.alert("Error fetching wallet balances", `${error}`);

@@ -22,7 +22,7 @@ import Wallet from "./wallet";
 
 export default function Index() {
   const { createAuthSession, status, user } = useCrossmintAuth();
-  const { getOrCreateWallet, wallet } = useWallet();
+  const { getOrCreateWallet, wallet, experimental_recoverySigner, experimental_createRecoveryKeySigner } = useWallet();
   const url = Linking.useURL();
   const [activeTab, setActiveTab] = useState<TabKey>("wallet");
 
@@ -33,13 +33,13 @@ export default function Index() {
   }, [url, createAuthSession]);
 
   useEffect(() => {
-    if (wallet == null && user != null) {
+    if (wallet == null && user != null && experimental_recoverySigner != null) {
       getOrCreateWallet({
         type: "solana-smart-wallet",
-        args: {},
+        args: { adminSigner: experimental_recoverySigner },
       });
     }
-  }, [wallet, getOrCreateWallet, user]);
+  }, [wallet, getOrCreateWallet, user, experimental_recoverySigner]);
 
   if (status === "initializing") {
     return (
@@ -49,7 +49,7 @@ export default function Index() {
     );
   }
 
-  if (status === "logged-out") {
+  if (status === "logged-out" || experimental_recoverySigner == null) {
     return <Redirect href="/login" />;
   }
 

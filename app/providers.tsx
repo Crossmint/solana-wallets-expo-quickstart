@@ -17,7 +17,9 @@ export default function CrossmintProviders({ children }: ProvidersProps) {
   return (
     <CrossmintProvider apiKey={apiKey}>
       <CrossmintAuthProvider>
-        <CrossmintWalletProvider>{children}</CrossmintWalletProvider>
+        <CrossmintWalletProvider experimental_enableRecoveryKeys={true}>
+          {children}
+        </CrossmintWalletProvider>
       </CrossmintAuthProvider>
     </CrossmintProvider>
   );

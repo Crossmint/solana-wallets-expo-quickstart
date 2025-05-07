@@ -53,7 +53,7 @@ cp .env.template .env
    
    a. Generate a Crossmint client API key from [here](https://docs.crossmint.com/introduction/platform/api-keys/client-side).
    
-   b. Make sure your API key has the following scopes: users.create, users.read, wallets.read, wallets.create, wallets:transactions.create, wallets:transactions.sign, wallets:balance.read, wallets.fund.
+   b. Make sure your API key has the following scopes: `users.create`, `users.read`, `wallets.read`, `wallets.create`, `wallets:transactions.create`, `wallets:transactions.sign`, `wallets:balance.read`, `wallets.fund`.
    
    c. To authenticate requests from your app, whitelist the app domain by selecting "Mobile" under "App type" and entering your iOS bundle ID and Android package name from `app.json` (by default this quickstart uses "com.crossmint.solana.wallets").
 

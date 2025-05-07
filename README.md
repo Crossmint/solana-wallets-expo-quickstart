@@ -49,11 +49,13 @@ bun install
 ```bash
 cp .env.template .env
 ```
-4. Set up your Crossmint API key:
+4. Set up your Crossmint client API key:
    
-   a. Generate a Crossmint API key from [here](https://docs.crossmint.com/introduction/platform/api-keys/client-side).
+   a. Generate a Crossmint client API key from [here](https://docs.crossmint.com/introduction/platform/api-keys/client-side).
    
-   b. To authenticate requests from your app, whitelist the app domain by selecting "Mobile" under "App type" and entering your iOS bundle ID and Android package name from `app.json` (by default this quickstart uses "com.crossmint.solana.wallets").
+   b. Make sure your API key has the following scopes: `users.create`, `users.read`, `wallets.read`, `wallets.create`, `wallets:transactions.create`, `wallets:transactions.sign`, `wallets:balance.read`, `wallets.fund`.
+   
+   c. To authenticate requests from your app, whitelist the app domain by selecting "Mobile" under "App type" and entering your iOS bundle ID and Android package name from `app.json` (by default this quickstart uses "com.crossmint.solana.wallets").
 
 5. Add the API key to the `.env` file.
 

@@ -1,8 +1,8 @@
 // https://docs.expo.dev/guides/using-eslint/
 module.exports = {
-  extends: ["expo", "prettier"],
-  plugins: ["prettier"],
+  extends: ["expo"],
   rules: {
-    "prettier/prettier": "error",
+    "no-console": "warn",
+    "no-unused-vars": "warn",
   },
 };

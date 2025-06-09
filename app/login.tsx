@@ -39,7 +39,7 @@ export default function Login() {
     const oneTimeSecret = await crossmintAuth?.confirmEmailOtp(
       email,
       emailId,
-      otp,
+      otp
     );
     await createAuthSession(oneTimeSecret);
     setIsPending(false);

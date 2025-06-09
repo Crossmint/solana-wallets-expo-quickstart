@@ -2,7 +2,6 @@ import React from "react";
 import { Stack } from "expo-router";
 import { StyleSheet, View } from "react-native";
 import CrossmintProviders from "./providers";
-import "@/lib/polyfills";
 
 export default function RootLayout() {
   return (

@@ -49,12 +49,13 @@ bun install
 ```bash
 cp .env.template .env
 ```
+
 4. Set up your Crossmint client API key:
-   
+
    a. Generate a Crossmint client API key from [here](https://docs.crossmint.com/introduction/platform/api-keys/client-side).
-   
+
    b. Make sure your API key has the following scopes: `users.create`, `users.read`, `wallets.read`, `wallets.create`, `wallets:transactions.create`, `wallets:transactions.sign`, `wallets:balance.read`, `wallets.fund`.
-   
+
    c. To authenticate requests from your app, whitelist the app domain by selecting "Mobile" under "App type" and entering your iOS bundle ID and Android package name from `app.json` (by default this quickstart uses "com.crossmint.solana.wallets").
 
 5. Add the API key to the `.env` file.
@@ -77,15 +78,9 @@ bun start
 
 Note: When running an iOS development build, make sure you're running the latest version on the simulator (>iOS 18).
 
-## Necessary polyfills
-
-Check out [polyfills.ts](lib/polyfills.ts) and [metro.config.js](metro.config.js) for the necessary polyfills to send Solana transactions. Make sure to keep these in your Expo app.
-
 ## Using in production
 
 1. Create a [production API key](https://docs.crossmint.com/introduction/platform/api-keys/client-side).
-2. Update the `NEXT_PUBLIC_RPC_URL` to a mainnet RPC URL, you can use the public RPC URL `https://api.mainnet-beta.solana.com`.
-3. Update the `NEXT_PUBLIC_USDC_TOKEN_MINT` to the mainnet USDC token mint address `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`.
 
 ## Errors when running in iOS simulator
 

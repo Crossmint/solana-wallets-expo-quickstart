@@ -19,40 +19,40 @@ import {
 let delegatedSignersCache: DelegatedSigner[] | null = null;
 
 export default function DelegateSigners() {
-  const { wallet, type } = useWallet();
+  const { wallet } = useWallet();
   const [isLoading, setIsLoading] = useState(false);
   const [delegatedSigners, setDelegatedSigners] = useState<DelegatedSigner[]>(
-    delegatedSignersCache || [],
+    delegatedSignersCache || []
   );
   const [newSigner, setNewSigner] = useState<string>("");
 
   useEffect(() => {
     const fetchDelegatedSigners = async () => {
-      if (wallet != null && type === "solana-smart-wallet") {
-        const signers = await wallet.getDelegatedSigners();
+      if (wallet != null) {
+        const signers = await wallet.delegatedSigners();
         setDelegatedSigners(signers);
         delegatedSignersCache = signers;
       }
     };
     fetchDelegatedSigners();
-  }, [wallet, type]);
+  }, [wallet]);
 
   const addNewSigner = async () => {
-    if (wallet == null || type !== "solana-smart-wallet") {
+    if (wallet == null) {
       Alert.alert("No wallet connected");
       return;
     }
     if (!newSigner) {
       Alert.alert(
         "Error adding delegated signer",
-        "No signer provided, please enter a valid signer",
+        "No signer provided, please enter a valid signer"
       );
       return;
     }
     try {
       setIsLoading(true);
-      await wallet.addDelegatedSigner(`solana-keypair:${newSigner}`);
-      const signers = await wallet.getDelegatedSigners();
+      await wallet.addDelegatedSigner({ signer: newSigner });
+      const signers = await wallet.delegatedSigners();
       setDelegatedSigners(signers);
     } catch (err) {
       console.error("Delegated Signer: ", err);
@@ -72,7 +72,7 @@ export default function DelegateSigners() {
           style={styles.learnMoreLink}
           onPress={() =>
             Linking.openURL(
-              "https://docs.crossmint.com/wallets/advanced/delegated-keys",
+              "https://docs.crossmint.com/wallets/advanced/delegated-keys"
             )
           }
         >
@@ -101,20 +101,20 @@ export default function DelegateSigners() {
       </TouchableOpacity>
 
       {/* List of delegated signers */}
-      {delegatedSigners.length > 0 && (
+      {delegatedSigners.length > 0 ? (
         <View style={styles.signersContainer}>
           <Text style={styles.signersTitle}>Registered signers</Text>
           <View style={styles.signersListContainer}>
             <View style={styles.signersList}>
-              {delegatedSigners.map((signer) => (
-                <Text key={signer.locator} style={styles.signerItem}>
-                  {signer.locator}
+              {delegatedSigners.map(({ signer }) => (
+                <Text key={signer} style={styles.signerItem}>
+                  {signer}
                 </Text>
               ))}
             </View>
           </View>
         </View>
-      )}
+      ) : null}
     </ScrollView>
   );
 }

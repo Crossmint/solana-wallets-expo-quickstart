@@ -9,39 +9,33 @@ import {
   ScrollView,
   RefreshControl,
 } from "react-native";
-import {
-  useWallet,
-  type WalletBalance,
-} from "@crossmint/client-sdk-react-native-ui";
+import { useWallet, Balances } from "@crossmint/client-sdk-react-native-ui";
 import { Linking } from "react-native";
 
-const formatBalance = (balance: string, decimals: number) => {
-  return (Number(balance) / 10 ** decimals).toFixed(2);
+const formatBalance = (amount: string) => {
+  return parseFloat(amount).toFixed(2);
 };
 
-// We want to cache the balances so we don't see a flash of 0s when we change tabs
-let balancesCache: WalletBalance | null = null;
+let balancesCache: Balances | null = null;
 
 export default function Balance() {
-  const { wallet, type } = useWallet();
-  const [balances, setBalances] = useState<WalletBalance>([]);
+  const { wallet } = useWallet();
+  const [balances, setBalances] = useState<Balances>(balancesCache || []);
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchBalances = useCallback(async () => {
-    if (wallet == null || type !== "solana-smart-wallet") {
+    if (wallet == null) {
       return;
     }
     try {
-      const balances = await wallet.getBalances({
-        tokens: ["sol", "usdc"],
-      });
+      const balances = await wallet.balances(["sol", "usdc"]);
       setBalances(balances);
       balancesCache = balances;
     } catch (error) {
       console.error("Error fetching wallet balances:", error);
       Alert.alert("Error fetching wallet balances", `${error}`);
     }
-  }, [wallet, type]);
+  }, [wallet]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -53,10 +47,8 @@ export default function Balance() {
     fetchBalances();
   }, [fetchBalances]);
 
-  const solBalance =
-    balances?.find((t) => t.token === "sol")?.balances.total || "0";
-  const usdcBalance =
-    balances?.find((t) => t.token === "usdc")?.balances.total || "0";
+  const solBalance = balances?.find((t) => t.token === "sol")?.amount || "0";
+  const usdcBalance = balances?.find((t) => t.token === "usdc")?.amount || "0";
 
   if (wallet == null) {
     return (
@@ -93,7 +85,7 @@ export default function Balance() {
             <Text style={styles.tokenSymbol}>SOL</Text>
           </View>
           <Text style={styles.tokenBalance}>
-            {formatBalance(solBalance, 9)} SOL
+            {formatBalance(solBalance)} SOL
           </Text>
         </View>
 
@@ -109,9 +101,7 @@ export default function Balance() {
             </View>
             <Text style={styles.tokenSymbol}>USDC</Text>
           </View>
-          <Text style={styles.tokenBalance}>
-            ${formatBalance(usdcBalance, 6)}
-          </Text>
+          <Text style={styles.tokenBalance}>${formatBalance(usdcBalance)}</Text>
         </View>
       </View>
 

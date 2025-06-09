@@ -34,10 +34,7 @@ export default function Index() {
 
   useEffect(() => {
     if (wallet == null && user != null) {
-      getOrCreateWallet({
-        type: "solana-smart-wallet",
-        args: {},
-      });
+      getOrCreateWallet({ chain: "solana", signer: { type: "api-key" } });
     }
   }, [wallet, getOrCreateWallet, user]);
 

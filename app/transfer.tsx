@@ -1,8 +1,4 @@
 import { useWallet } from "@crossmint/client-sdk-react-native-ui";
-import {
-  createTokenTransferTransaction,
-  createNativeTransferTransaction,
-} from "../lib/createTransaction";
 import React, { useState, useCallback, useRef } from "react";
 import {
   View,
@@ -17,7 +13,7 @@ import {
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function Transfer() {
-  const { wallet, type } = useWallet();
+  const { wallet } = useWallet();
   const [amount, setAmount] = useState("");
   const [recipientAddress, setRecipientAddress] = useState("");
   const [selectedToken, setSelectedToken] = useState<"SOL" | "USDC">("SOL");
@@ -26,42 +22,24 @@ export default function Transfer() {
   const scrollViewRef = useRef<KeyboardAwareScrollView>(null);
 
   const transferTokens = useCallback(async () => {
-    if (wallet == null || type !== "solana-smart-wallet") {
+    if (wallet == null) {
       return;
     }
 
     try {
       setIsPending(true);
-      const transaction =
-        selectedToken === "SOL"
-          ? await createNativeTransferTransaction(
-              wallet.address,
-              recipientAddress,
-              Number(amount),
-            )
-          : await createTokenTransferTransaction(
-              wallet.address,
-              recipientAddress,
-              process.env.EXPO_PUBLIC_USDC_TOKEN_MINT ||
-                "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
-              Number(amount),
-            );
-
-      const hash = await wallet.sendTransaction({
-        transaction,
-      });
+      const hash = await wallet.send(recipientAddress, selectedToken, amount);
       if (hash) {
         setTxHash(hash);
         setAmount("");
         setRecipientAddress("");
       }
     } catch (error) {
-      console.error("Transfer error:", error);
       Alert.alert("Transfer Failed", `${error}`);
     } finally {
       setIsPending(false);
     }
-  }, [wallet, type, selectedToken, recipientAddress, amount]);
+  }, [wallet, selectedToken, recipientAddress, amount]);
 
   return (
     <KeyboardAwareScrollView
@@ -78,7 +56,9 @@ export default function Transfer() {
         <View style={styles.successMessage}>
           <Text style={styles.successText}>Transfer successful!</Text>
           <TouchableOpacity
-            onPress={() => Linking.openURL(`https://solscan.io/tx/${txHash}?`)}
+            onPress={() =>
+              Linking.openURL(`https://solscan.io/tx/${txHash}?cluster=devnet`)
+            }
           >
             <Text style={styles.signatureText}>View on Solscan</Text>
           </TouchableOpacity>
